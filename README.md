@@ -9,7 +9,7 @@ flowchart LR
     T(["/kirito-mode &lt;task&gt;"]) --> R{Route}
 
     R -->|feature| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect]"] --> F5[to-tickets] --> F6[tdd per ticket] --> FIN
-    R -->|small| S1{1-2 files?}
+    R -->|small| S1{"1-2 files, no interface change?"}
     S1 -->|yes| S2[tdd or run the app] --> FIN
     S1 -->|no| S3[to-tickets] --> S2
     R -->|bug| B1[diagnosing-bugs + regression test] --> FIN
@@ -17,10 +17,10 @@ flowchart LR
     R -->|understand| U1[how / why / explain]
     R -->|pr| P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
 
-    FIN[["checks green, tidy, branch check, commit"]]
+    FIN[["checks green, spec/plan agree, tidy, branch check, commit"]]
 ```
 
-`[brackets]` = only when the area is unfamiliar or tickets cross a module seam. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+`[how]` and `[architect]` run only when the area is unfamiliar or tickets cross a module seam. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
 
 ## Install
 
