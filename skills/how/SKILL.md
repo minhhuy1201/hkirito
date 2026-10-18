@@ -1,7 +1,6 @@
 ---
 name: how
 description: "Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\"). Explains subsystem architecture, runtime flow, onboarding mental models. Use why for motivation."
-disable-model-invocation: true
 ---
 <!-- ported from cursor/plugins pstack@101b274 (MIT), inline version, see THIRD_PARTY.md -->
 

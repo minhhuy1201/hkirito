@@ -1,7 +1,6 @@
 ---
 name: explain
 description: "Explain a subsystem, change, or diff plainly so the person understands it: what it is, how it works, and why it is built that way. Runs how and why and weaves the results into one account. Use for 'explain this', 'help me understand X', 'walk me through this change'. Not for learning a new topic over many sessions (use learn)."
-disable-model-invocation: true
 ---
 <!-- ported from cursor/plugins pstack@101b274 (MIT), renamed from teach, see THIRD_PARTY.md -->
 
