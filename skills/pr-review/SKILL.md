@@ -39,7 +39,7 @@ See [references/checklist.md](references/checklist.md) for the full printable ch
    agent hands back the verdict and the session that dispatched it writes the marker:
 
    ```bash
-   git rev-parse HEAD > "$(git rev-parse --show-toplevel)/.claude/.pr-review-passed"
+   root="$(git rev-parse --show-toplevel)" && mkdir -p "$root/.claude" && git rev-parse HEAD > "$root/.claude/.pr-review-passed"
    ```
 
    This marker is what the optional pre-push gate (`hooks/pre-push-review-gate.sh` in the harness)

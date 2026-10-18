@@ -82,16 +82,16 @@ Then:
 
 1. Make the check **Self-review** required in branch protection for your default branch.
 2. Before opening a PR, run `/pr-review` (or say "review my changes"). Paste its Self-review block under `## Self-review` in the PR body. The block carries a `pr-review: sha=...` marker. The check fails when the block is missing or the sha differs from the PR head, so re-run the review after every push.
-3. Optional: add `hooks/pre-push-review-gate.sh` from `hooks/settings-snippet.json`. It blocks `git push` from Claude Code until a review approved the current HEAD. Add `.claude/.pr-review-passed` to the project's `.gitignore`.
+3. Optional: add `hooks/pre-push-review-gate.sh` from `hooks/settings-snippet-push-gate.json` (merge into `hooks.PreToolUse`, same path replacement as the commit gate). It blocks `git push` from Claude Code until a review approved the current HEAD. Add `.claude/.pr-review-passed` to the project's `.gitignore`.
 
-Bot PRs (Dependabot) skip the check. Edit the template's wording and the `<type>(<scope>)` rule to fit your team.
+Bot PRs (Dependabot) skip the check. Edit the template's wording and the `<type>(<scope>)` rule to fit your team. The skill and workflow assume the default branch is `main`; change `origin/main` in `skills/pr-review/SKILL.md` step 1 if yours differs.
 
 ## Layout
 
 ```
 skills/            kirito-mode, tidy, and the vendored and ported skills
 agents/            reviewer.md
-hooks/             commit-gate.sh, pre-push-review-gate.sh, settings-snippet.json (optional)
+hooks/             commit-gate.sh, pre-push-review-gate.sh, settings-snippet.json, settings-snippet-push-gate.json (optional)
 templates/         PR template and Self-review workflow to copy into a project
 githooks/          pre-commit (optional)
 docs/              this repo's own spec and plan

@@ -7,10 +7,6 @@
           {
             "type": "command",
             "command": "/ABSOLUTE/PATH/TO/hkirito/hooks/commit-gate.sh"
-          },
-          {
-            "type": "command",
-            "command": "/ABSOLUTE/PATH/TO/hkirito/hooks/pre-push-review-gate.sh"
           }
         ]
       }

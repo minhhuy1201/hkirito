@@ -6,7 +6,7 @@
 ## Tests
 
 <!-- What you ran and what it said. Name the commands, not "tests pass":
-     pnpm --filter <api|web> test / typecheck / lint
+     <your test / typecheck / lint commands>
      Add the manual checks a reviewer cannot reproduce from CI (a role, a screen, a deploy). -->
 
 ## Note
