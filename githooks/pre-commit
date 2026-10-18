@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Git pre-commit hook: blocks commits made by Claude Code (CLAUDECODE=1) until /tidy has run on the staged diff.
+# Human commits pass. Copy to .git/hooks/pre-commit, or call this file from Husky's .husky/pre-commit.
+set -euo pipefail
+
+[ "${CLAUDECODE:-}" = "1" ] || exit 0
+
+current=$(git diff --cached | sha256sum | cut -d' ' -f1)
+marked=$(cat "$(git rev-parse --absolute-git-dir)/kirito-tidy" 2>/dev/null || true)
+
+if [ "$current" != "$marked" ]; then
+  echo "Blocked: the staged diff has not been through /tidy. Run /tidy, then commit again." >&2
+  exit 1
+fi
