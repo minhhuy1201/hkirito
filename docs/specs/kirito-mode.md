@@ -42,6 +42,7 @@ The user types `/kirito-mode <task>`. The router picks a route, prints `Route: <
 - `tidy` marks completion by writing the hash of `git diff --cached` to `$(git rev-parse --git-dir)/kirito-tidy`. The hook and the git pre-commit hook compare that marker with the current staged hash.
 - The git pre-commit hook enforces only when `CLAUDECODE=1`, which the Claude Code Bash tool sets.
 - The Claude hook is opt-in: it runs only after the user pastes `hooks/settings-snippet.json` into their settings, so cloning and symlinking never adds a hook.
+- The push gate (`hooks/pre-push-review-gate.sh`) is opt-in through its own snippet, `hooks/settings-snippet-push-gate.json`. The PR template and the Self-review workflow live in `templates/github/` and are copied per project. `review-loop` and the `pr` route use a `pr-review` skill from the project or from `~/.claude/skills/`.
 - Skills are unnamespaced; a symlinked skill replaces any same-name copy in `~/.claude/skills/`.
 
 ## Testing decisions
