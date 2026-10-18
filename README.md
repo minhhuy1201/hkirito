@@ -1,21 +1,26 @@
 # hkirito
 
-A spec-driven harness for Claude Code. One entry point, `/kirito-mode <task>`, classifies the task and runs the matching flow of skills. Clone it, symlink it into `~/.claude/`, and edit it to taste.
-
-Specs and plans live in the repo: [`docs/specs/kirito-mode.md`](docs/specs/kirito-mode.md), [`docs/plans/kirito-mode.md`](docs/plans/kirito-mode.md).
+A spec-driven harness for Claude Code. One entry point, `/kirito-mode <task>`, classifies the task and runs the matching flow of skills. Spec: [`docs/specs/kirito-mode.md`](docs/specs/kirito-mode.md). Plan: [`docs/plans/kirito-mode.md`](docs/plans/kirito-mode.md).
 
 ## Flows
 
-| Route | When | Flow |
-|---|---|---|
-| `feature` | New behaviour or a design change across modules | `grill-with-docs` -> `to-spec` -> `to-tickets` -> `tdd` -> `tidy` -> commit |
-| `small` | Short, contained change | `tdd` (or run the app) -> `tidy` -> commit; `to-tickets` first when it spans several files |
-| `bug` | Something is broken | `diagnosing-bugs` -> regression test -> `tidy` -> commit |
-| `understand` | A question about the code | `how`, `why`, `explain` |
-| `refactor` | Restructure, same behaviour | `codebase-design` -> `tdd` -> `tidy` -> commit |
-| `pr` | Open a PR | `review-loop` -> `pr-sketch` -> `gh pr create` |
+```mermaid
+flowchart LR
+    T(["/kirito-mode &lt;task&gt;"]) --> R{Route}
 
-Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+    R -->|feature| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect]"] --> F5[to-tickets] --> F6[tdd per ticket] --> FIN
+    R -->|small| S1{1-2 files?}
+    S1 -->|yes| S2[tdd or run the app] --> FIN
+    S1 -->|no| S3[to-tickets] --> S2
+    R -->|bug| B1[diagnosing-bugs + regression test] --> FIN
+    R -->|refactor| X1["codebase-design [+ improve-codebase-architecture]"] --> X2[tdd] --> FIN
+    R -->|understand| U1[how / why / explain]
+    R -->|pr| P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
+
+    FIN[["checks green, tidy, branch check, commit"]]
+```
+
+`[brackets]` = only when the area is unfamiliar or tickets cross a module seam. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
 
 ## Install
 
@@ -35,41 +40,33 @@ done
 ln -sfn "$PWD/agents/reviewer.md" ~/.claude/agents/reviewer.md
 ```
 
-Skills are not namespaced: they appear as `/kirito-mode`, `/tidy`, `/tdd`, and so on. A skill with the same name in `~/.claude/skills/` must be moved aside first or the loop above skips it.
-
 Start a new session and run `/kirito-mode <what you want done>`.
 
-If you use the superpowers plugin, disable it (`enabledPlugins` in `~/.claude/settings.json`). Its session hook pushes its own workflow and competes with the router. The two rules worth keeping from it, verify before claiming done and verify each review finding, are written into `kirito-mode`.
-
-### Adapt it
-
-- `skills/kirito-mode/SKILL.md` is the router. `routes/*.md` hold one flow each. Change them to fit your team.
-- `review-loop` and `agents/reviewer.md` assume project rules from the author's `CLAUDE.md` (branch names, Vietnamese review summary). Edit them for yours.
-- `skills/grill-with-docs` needs `grilling` and `domain-modeling` enabled. Check `skillOverrides` in your settings.
+- Skills are not namespaced (`/kirito-mode`, `/tidy`, `/tdd`). Move aside any same-name skill in `~/.claude/skills/`, or the loop skips it.
+- Disable the superpowers plugin (`enabledPlugins` in `~/.claude/settings.json`): its session hook competes with the router. Its two useful rules (verify before claiming done, verify each review finding) live in `kirito-mode`.
+- To adapt: `skills/kirito-mode/SKILL.md` is the router, `routes/*.md` hold one flow each. `review-loop` and `agents/reviewer.md` assume the author's `CLAUDE.md` rules (branch names, Vietnamese review summary). `grill-with-docs` needs `grilling` and `domain-modeling` enabled (check `skillOverrides`).
 
 ## Commit gate (optional)
 
-`tidy` strips needless comments and AI-sounding prose from the staged diff before a commit. The skill flow already runs it. Two optional gates make it harder to skip. The skill flow works without either.
+`tidy` strips needless comments and AI-sounding prose from the staged diff. The flow already runs it; a gate makes it hard to skip.
 
-### Claude hook (machines where hooks are allowed)
-
-Paste `hooks/settings-snippet.json` into `~/.claude/settings.json`, merging it into any existing `hooks.PreToolUse`, and replace `/ABSOLUTE/PATH/TO/hkirito` with your clone path. It needs `python3` and `sha256sum`. It blocks `git commit` while the staged diff has not been through `/tidy`.
-
-### Git hook (works where Claude hooks are blocked)
-
-`githooks/pre-commit` applies the same check, but only when `CLAUDECODE=1`, which Claude Code sets in its shell. Human commits pass. Per project:
-
-```bash
-cp ~/hkirito/githooks/pre-commit .git/hooks/pre-commit
+```mermaid
+flowchart LR
+    A[git add] --> B["/tidy"] --> C["mark.sh writes sha256 of<br/>git diff --cached to .git/kirito-tidy"]
+    C --> D[git commit]
+    D --> E{"staged hash == mark?"}
+    E -->|yes| OK([commit])
+    E -->|"no, staged after /tidy"| NO(["blocked, run /tidy again"])
 ```
 
-With Husky, call it from `.husky/pre-commit`: `~/hkirito/githooks/pre-commit`.
+Pick one:
 
-Both gates compare the hash that `skills/tidy/scripts/mark.sh` writes to `.git/kirito-tidy` with the hash of `git diff --cached`. Staging anything after `/tidy` invalidates the mark, so run `/tidy` last.
+| Gate | Where it works | Setup |
+|---|---|---|
+| Claude hook | Machines where Claude hooks are allowed | Merge `hooks/settings-snippet.json` into `hooks.PreToolUse` in `~/.claude/settings.json`; replace `/ABSOLUTE/PATH/TO/hkirito`. Needs `python3`, `sha256sum`. |
+| Git hook | Where Claude hooks are blocked | `cp ~/hkirito/githooks/pre-commit .git/hooks/pre-commit` (Husky: call it from `.husky/pre-commit`). Checks only when `CLAUDECODE=1`; human commits pass. |
 
 ## PR template and self-review (per project)
-
-The `pr-review` skill installs with the other skills. The PR template and the "Self-review" check live in each project's `.github/`, so copy them into every project that should use them:
 
 ```bash
 cd /path/to/your-project
@@ -78,20 +75,38 @@ cp ~/hkirito/templates/github/pull_request_template.md .github/
 cp ~/hkirito/templates/github/workflows/pr-self-review.yml .github/workflows/
 ```
 
-Then:
+Then make **Self-review** a required check in branch protection for the default branch.
 
-1. Make the check **Self-review** required in branch protection for your default branch.
-2. Before opening a PR, run `/pr-review` (or say "review my changes"). Paste its Self-review block under `## Self-review` in the PR body. The block carries a `pr-review: sha=...` marker. The check fails when the block is missing or the sha differs from the PR head, so re-run the review after every push.
-3. Optional: add `hooks/pre-push-review-gate.sh` from `hooks/settings-snippet-push-gate.json` (merge into `hooks.PreToolUse`, same path replacement as the commit gate). It blocks `git push` from Claude Code until a review approved the current HEAD. Add `.claude/.pr-review-passed` to the project's `.gitignore`.
+```mermaid
+sequenceDiagram
+    actor Dev
+    participant C as Claude Code
+    participant GH as GitHub check "Self-review"
+    Dev->>C: /pr-review
+    C-->>Dev: Self-review block with pr-review sha=HEAD marker
+    opt push gate installed
+        C->>C: write .claude/.pr-review-passed on Approve
+        Note over C: git push blocked until marker == HEAD
+    end
+    Dev->>GH: push, paste block into PR Self-review section
+    GH->>GH: marker sha == PR head?
+    alt match
+        GH-->>Dev: pass
+    else missing or stale (new push)
+        GH-->>Dev: fail + label needs-self-review, re-run /pr-review
+    end
+```
 
-Bot PRs (Dependabot) skip the check. Edit the template's wording and the `<type>(<scope>)` rule to fit your team. The skill and workflow assume the default branch is `main`; change `origin/main` in `skills/pr-review/SKILL.md` step 1 if yours differs.
+- Push gate (optional): merge `hooks/settings-snippet-push-gate.json` into `hooks.PreToolUse` (same path replacement), and add `.claude/.pr-review-passed` to `.gitignore`. It only sees pushes from Claude Code; it is not a security boundary.
+- Bot PRs (Dependabot) skip the check.
+- Default branch is assumed `main`; change `origin/main` in `skills/pr-review/SKILL.md` step 1 if not. Edit the template wording and `<type>(<scope>)` rule to fit your team.
 
 ## Layout
 
 ```
 skills/            kirito-mode, tidy, and the vendored and ported skills
 agents/            reviewer.md
-hooks/             commit-gate.sh, pre-push-review-gate.sh, settings-snippet.json, settings-snippet-push-gate.json (optional)
+hooks/             commit and push gates + settings snippets (optional)
 templates/         PR template and Self-review workflow to copy into a project
 githooks/          pre-commit (optional)
 docs/              this repo's own spec and plan
