@@ -6,7 +6,7 @@ A spec-driven harness for Claude Code. One entry point, `/kirito-mode <task>`, c
 
 ```mermaid
 flowchart LR
-    T(["/kirito-mode &lt;task&gt;"]) --> R{Route}
+    T(["/kirito-mode TASK"]) --> R{Route}
 
     R -->|feature| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect]"] --> F5[to-tickets] --> F6[tdd per ticket] --> FIN
     R -->|small| S1{"1-2 files, no interface change?"}
