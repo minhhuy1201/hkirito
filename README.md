@@ -67,12 +67,32 @@ With Husky, call it from `.husky/pre-commit`: `~/hkirito/githooks/pre-commit`.
 
 Both gates compare the hash that `skills/tidy/scripts/mark.sh` writes to `.git/kirito-tidy` with the hash of `git diff --cached`. Staging anything after `/tidy` invalidates the mark, so run `/tidy` last.
 
+## PR template and self-review (per project)
+
+The `pr-review` skill installs with the other skills. The PR template and the "Self-review" check live in each project's `.github/`, so copy them into every project that should use them:
+
+```bash
+cd /path/to/your-project
+mkdir -p .github/workflows
+cp ~/hkirito/templates/github/pull_request_template.md .github/
+cp ~/hkirito/templates/github/workflows/pr-self-review.yml .github/workflows/
+```
+
+Then:
+
+1. Make the check **Self-review** required in branch protection for your default branch.
+2. Before opening a PR, run `/pr-review` (or say "review my changes"). Paste its Self-review block under `## Self-review` in the PR body. The block carries a `pr-review: sha=...` marker. The check fails when the block is missing or the sha differs from the PR head, so re-run the review after every push.
+3. Optional: add `hooks/pre-push-review-gate.sh` from `hooks/settings-snippet-push-gate.json` (merge into `hooks.PreToolUse`, same path replacement as the commit gate). It blocks `git push` from Claude Code until a review approved the current HEAD. Add `.claude/.pr-review-passed` to the project's `.gitignore`.
+
+Bot PRs (Dependabot) skip the check. Edit the template's wording and the `<type>(<scope>)` rule to fit your team. The skill and workflow assume the default branch is `main`; change `origin/main` in `skills/pr-review/SKILL.md` step 1 if yours differs.
+
 ## Layout
 
 ```
 skills/            kirito-mode, tidy, and the vendored and ported skills
 agents/            reviewer.md
-hooks/             commit-gate.sh, settings-snippet.json (optional)
+hooks/             commit-gate.sh, pre-push-review-gate.sh, settings-snippet.json, settings-snippet-push-gate.json (optional)
+templates/         PR template and Self-review workflow to copy into a project
 githooks/          pre-commit (optional)
 docs/              this repo's own spec and plan
 THIRD_PARTY.md     upstream sources and licenses

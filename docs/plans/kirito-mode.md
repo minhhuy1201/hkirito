@@ -31,6 +31,9 @@ hkirito/
   agents/reviewer.md
   hooks/commit-gate.sh                # optional, home machine only
   hooks/settings-snippet.json         # PreToolUse entry to paste into ~/.claude/settings.json
+  hooks/pre-push-review-gate.sh       # optional push gate, wired by hooks/settings-snippet-push-gate.json
+  skills/pr-review/                   # PR review checklist and Self-review block
+  templates/github/                   # PR template + Self-review workflow, copied per project
   githooks/pre-commit                 # layer 3, copied into a project's .git/hooks or Husky
   docs/specs/kirito-mode.md
   docs/plans/kirito-mode.md

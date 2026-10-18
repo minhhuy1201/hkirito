@@ -1,6 +1,6 @@
 ---
 name: review-loop
-description: Implement-review loop for work written in this session - a fresh `reviewer` subagent each round, ending in the project's `pr-review` gate before push. Use when reviewing your own changes before pushing.
+description: Implement-review loop for work written in this session - a fresh `reviewer` subagent each round, ending in the `pr-review` gate (project or global) before push. Use when reviewing your own changes before pushing.
 ---
 
 # Review loop
@@ -35,7 +35,7 @@ idx="$(git rev-parse --git-path index).snap"; command cp -f "$(git rev-parse --g
 
 Record the printed tree SHA under `## Snapshots`. An incremental round's scope is `git diff <previous-snapshot> <this-snapshot>`; round 1 uses `git diff "$(git merge-base origin/<base> HEAD)" <this-snapshot>` - the merge-base matches the gate's `<base>...HEAD`, so commits that landed on the base after branching stay out of scope (three-dot syntax rejects a tree SHA).
 
-**Base** is the PR's real target: `gh pr view --json baseRefName -q .baseRefName` once a PR exists; before that, the base the project's `pr-review` names, confirmed with `git rev-parse --verify origin/<base>`. Ask the user when neither resolves.
+**Base** is the PR's real target: `gh pr view --json baseRefName -q .baseRefName` once a PR exists; before that, the base the `pr-review` skill names, confirmed with `git rev-parse --verify origin/<base>`. Ask the user when neither resolves.
 
 ## Rounds
 
@@ -53,10 +53,10 @@ Between rounds the main session handles every `OPEN` item: fix it (`FIXED`), ans
 ## Final round
 
 1. Commit all work - the Git rules in `CLAUDE.md` (protected branches, PR size, commit format) apply, and committing needs the user's go-ahead. The gate reviews `HEAD`, so uncommitted work is outside it.
-2. When the repo has `.claude/skills/pr-review/SKILL.md`, dispatch `reviewer` with: the log's `## Spec` and `## Findings`, the resolved base, and the instruction to read that skill and follow its steps 1-4 and 6 on `<base>...HEAD`, skipping step 5 (the marker). It returns that skill's `## Review Summary` and `## Self-review` block in English, plus `needs_human_review` in Vietnamese. Severity maps both ways: `must-fix` = 🔴 Blocker, `should-fix` / `nit` = 🟡 Nit, `question` = 💬 Question. The `## Self-review` block covers the whole loop: its `(fixed: <n>)` counts every `must-fix` the log marks `FIXED`, and its Findings list each of them with how it was fixed.
-3. Without a project `pr-review`, the final round is a full review of `<base>..HEAD` with the reviewer prompt below.
+2. When a `pr-review` skill exists (the repo's `.claude/skills/pr-review/SKILL.md` or the global `~/.claude/skills/pr-review/SKILL.md`), dispatch `reviewer` with: the log's `## Spec` and `## Findings`, the resolved base, and the instruction to read that skill and follow its steps 1-4 and 6 on `<base>...HEAD`, skipping step 5 (the marker). It returns that skill's `## Review Summary` and `## Self-review` block in English, plus `needs_human_review` in Vietnamese. Severity maps both ways: `must-fix` = 🔴 Blocker, `should-fix` / `nit` = 🟡 Nit, `question` = 💬 Question. The `## Self-review` block covers the whole loop: its `(fixed: <n>)` counts every `must-fix` the log marks `FIXED`, and its Findings list each of them with how it was fixed.
+3. Without any `pr-review`, the final round is a full review of `<base>..HEAD` with the reviewer prompt below.
 
-The gate **passes** on verdict Approve with zero unresolved 🔴 Blockers (or zero `must-fix`). Only then does the main session write the marker, exactly as the project skill's step 5 shows. Blockers send the loop back to the middle rounds. A 💬 Question leaves the verdict to the reviewer: the main session records it as `ANSWERED` in the log and shows it to the user with the **Needs human review** list.
+The gate **passes** on verdict Approve with zero unresolved 🔴 Blockers (or zero `must-fix`). Only then does the main session write the marker, exactly as the `pr-review` skill's step 5 shows. Blockers send the loop back to the middle rounds. A 💬 Question leaves the verdict to the reviewer: the main session records it as `ANSWERED` in the log and shows it to the user with the **Needs human review** list.
 
 Any commit after the gate passes - even a nit fix - invalidates the marker and the `## Self-review` SHA, so the gate runs again.
 
@@ -64,7 +64,7 @@ Before push and `gh pr create` (both asked first, per `CLAUDE.md`), show the use
 
 ## Reviewer prompt
 
-For round 1, the middle rounds, and a final round without project `pr-review`. Build it in this order - the fixed spec first keeps the prompt prefix stable across rounds:
+For round 1, the middle rounds, and a final round without any `pr-review`. Build it in this order - the fixed spec first keeps the prompt prefix stable across rounds:
 
 ```
 ## Task spec & acceptance criteria
