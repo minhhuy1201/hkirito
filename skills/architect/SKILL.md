@@ -1,7 +1,6 @@
 ---
 name: architect
 description: "Sketch types, signatures, and module structure before code, then fill in implementation against the sketch. Use for /architect, 'design this', or non-trivial work that crosses a module boundary and would lock in the wrong shape if coded straight away."
-disable-model-invocation: true
 ---
 <!-- ported from cursor/plugins pstack@101b274 (MIT), lite inline version without arena, see THIRD_PARTY.md -->
 

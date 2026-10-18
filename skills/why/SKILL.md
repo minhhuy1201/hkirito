@@ -1,7 +1,6 @@
 ---
 name: why
 description: "Use for 'why does X work this way', 'why we picked Y', design rationale, regressions, postmortems, or data-backed thresholds. Searches git history, PRs, and any available issue/doc/chat/error-tracking MCPs, then separates what is documented from what is inferred. Use how for mechanics."
-disable-model-invocation: true
 ---
 <!-- ported from cursor/plugins pstack@101b274 (MIT), inline version, see THIRD_PARTY.md -->
 

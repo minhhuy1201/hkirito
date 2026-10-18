@@ -1,7 +1,6 @@
 ---
 name: tidy
 description: "Run before every commit of agent-written code: strip needless comments and AI-sounding prose from the staged diff. Inline, no subagent. Outputs only 'done'. Use for /tidy or when a route reaches its pre-commit step."
-disable-model-invocation: true
 ---
 <!-- original; keep-list adapted from cursor/plugins pstack@101b274 agents/comment-sicko.md (MIT), see THIRD_PARTY.md -->
 

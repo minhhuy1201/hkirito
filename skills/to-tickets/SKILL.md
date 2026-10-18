@@ -1,7 +1,6 @@
 ---
 name: to-tickets
 description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, written as one file per ticket under docs/plans/<feature>/.
-disable-model-invocation: true
 ---
 <!-- vendored from mattpocock/skills@49dd158 (MIT), adapted, see THIRD_PARTY.md -->
 

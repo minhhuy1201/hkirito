@@ -1,7 +1,6 @@
 ---
 name: to-spec
 description: "Turn the current conversation into a spec file in docs/specs/: no interview, just synthesis of what you've already discussed."
-disable-model-invocation: true
 ---
 <!-- vendored from mattpocock/skills@49dd158 (MIT), adapted, see THIRD_PARTY.md -->
 
