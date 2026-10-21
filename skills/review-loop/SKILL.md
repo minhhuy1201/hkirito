@@ -62,6 +62,10 @@ Any commit after the gate passes - even a nit fix - invalidates the marker and t
 
 Before push and `gh pr create` (both asked first, per `CLAUDE.md`), show the user the latest **Needs human review** list. The `## Self-review` block goes into the PR body verbatim, in English; Vietnamese stays in chat. Invoke `pr-sketch` while writing that body.
 
+Run `git commit` and `git push` as separate Bash calls: a project push gate compares its marker with `HEAD` before the whole command runs, so a chained commit slips past it.
+
+When the PR is already open, every push moves the PR head. After the gate passes on the new `HEAD` and before the push, replace the `<!-- pr-review: sha=... -->` block in the PR body with the new `## Self-review` block (`gh pr edit <n> --body-file <file>`, keeping the rest of the body). After the push, confirm with `gh pr view <n> --json body,headRefOid` that the body's sha is a prefix of `headRefOid`.
+
 ## Reviewer prompt
 
 For round 1, the middle rounds, and a final round without any `pr-review`. Build it in this order - the fixed spec first keeps the prompt prefix stable across rounds:
