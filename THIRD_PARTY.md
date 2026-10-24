@@ -14,6 +14,7 @@ Skills in this repo are copied from, or adapted from, the projects below. Both a
 - Source: https://github.com/cursor/plugins/tree/main/pstack, commit `101b274`
 - Copyright (c) 2026 Lauren Tan
 - Used in: `unslop` (copied), `how`, `why`, `explain` (renamed from `teach`), `architect` (ported to run inline, without the multi-model arena), and the comment keep-list in `tidy`
+- Added at commit `9580c23`: `sharpen`, `correct` (copied)
 
 ## MIT License text
 
