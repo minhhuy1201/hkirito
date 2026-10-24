@@ -7,12 +7,15 @@ Skills in this repo are copied from, or adapted from, the projects below. Both a
 - Source: https://github.com/mattpocock/skills, commit `49dd158`
 - Copyright (c) 2026 Matt Pocock
 - Used in: `grilling`, `grill-with-docs`, `domain-modeling`, `tdd`, `codebase-design`, `diagnosing-bugs`, `prototype`, `improve-codebase-architecture`, `retro`, `handoff`, `writing-for-agents`, `to-spec` (adapted), `to-tickets` (adapted), `learn` (renamed from `teach`)
+- Added at commit `5beb35b`: `wait-what`, `to-questionnaire`, `wizard`, `research` (copied), `wayfinder` (adapted: map and tickets are files, no issue tracker), and the two review axes plus the smell baseline in `review-loop` (adapted from `code-review`)
 
 ## cursor/plugins, pstack
 
 - Source: https://github.com/cursor/plugins/tree/main/pstack, commit `101b274`
 - Copyright (c) 2026 Lauren Tan
+- Ideas from the `poteto-mode` playbooks (refuted hypotheses are reverted, subtract before adding, reader load as the refactor test, run it before you ask) live in the `bug` and `refactor` routes and the router's rules.
 - Used in: `unslop` (copied), `how`, `why`, `explain` (renamed from `teach`), `architect` (ported to run inline, without the multi-model arena), and the comment keep-list in `tidy`
+- Added at commit `9580c23`: `sharpen`, `correct`, `statechart` (with its scripts and tests), `create-formal-verification-skill`, `maintain-formal-verification-skill` (all copied), `blast-radius` (ported to run inline, without the multi-model arena), `interrogate` (ported: one fresh `reviewer` in place of the multi-model panel), `show-me-your-work` (ported: no transcript audit, one fresh `reviewer` for the independent review)
 
 ## MIT License text
 

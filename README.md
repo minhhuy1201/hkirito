@@ -8,19 +8,25 @@ A spec-driven harness for Claude Code. One entry point, `/kirito-mode <task>`, c
 flowchart LR
     T(["/kirito-mode TASK"]) --> R{Route}
 
-    R -->|feature| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect]"] --> F5[to-tickets] --> F6[tdd per ticket] --> FIN
+    R -->|feature| F0
+    F0 -->|no| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect + interrogate]"] --> F5[to-tickets] --> F6[tdd per ticket] --> FIN
+    F0{{feature too big for one session?}} -->|yes| W["/wayfinder, then one slice at a time"] -.-> F1
     R -->|small| S1{"1-2 files, no interface change?"}
     S1 -->|yes| S2[tdd or run the app] --> FIN
     S1 -->|no| S3[to-tickets] --> S2
     R -->|bug| B1[diagnosing-bugs + regression test] --> FIN
-    R -->|refactor| X1["codebase-design [+ improve-codebase-architecture]"] --> X2[tdd] --> FIN
-    R -->|understand| U1[how / why / explain]
-    R -->|pr| P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
+    R -->|refactor| X1["codebase-design [+ improve-codebase-architecture]"] --> X2[subtract, tdd] --> FIN
+    R -->|understand| U1[how / why / explain / research]
+    R -->|pr| P0["[blast-radius]"] --> P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
 
     FIN[["checks green, spec/plan agree, tidy, branch check, commit"]]
 ```
 
-`[how]` and `[architect]` run only when the area is unfamiliar or tickets cross a module seam. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+`[how]` runs only when the area is unfamiliar. `[blast-radius]` runs only when the diff touches a public interface, schema, data format, or widely imported export. `[architect]` runs when tickets cross a module seam, and `interrogate` joins it only when the design is contested. `review-loop` reports findings on two axes, Standards and Spec. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+
+### Skills you type yourself
+
+These never load unless typed (`disable-model-invocation`): `/wayfinder` (plan work too big for one session as a map of decision tickets), `/statechart`, `/create-formal-verification-skill`, `/maintain-formal-verification-skill` (draw a model as a chart; useful for bugs that depend on event order; `/statechart` downloads TLC and Java with mise, about 305 MB, on its first run), `/sharpen` (deepen a task prompt), `/correct` (stop repeated agent mistakes structurally), `/wait-what` (re-pitch the last answer in plain terms), `/to-questionnaire`, `/wizard` (a script that walks a human through manual steps), plus `/learn`, `/retro`, `/handoff`, `/unslop`.
 
 ## Install
 
