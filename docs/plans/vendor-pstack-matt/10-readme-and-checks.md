@@ -4,7 +4,7 @@ Spec: [vendor-pstack-matt](../../specs/vendor-pstack-matt.md)
 
 **What to build:** a teammate who clones hkirito sees the new flow in the README and gets every new skill from the existing install loop. Every check in the spec's Testing Decisions passes.
 
-**Blocked by:** 01, 02, 03, 04, 05, 06, 07, 08, 09
+**Blocked by:** 01, 02, 03, 04, 06, 07, 08, 09, and 05 except its run-in-order check, which needs a diff that touches an interface (this change has none)
 
 **Status:** done
 

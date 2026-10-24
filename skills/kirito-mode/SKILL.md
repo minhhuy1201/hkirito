@@ -15,12 +15,12 @@ Pick one route from the task text and a quick look at the code. Print one line f
 
 | Route | Pick it when | Flow (details in `routes/`) |
 |---|---|---|
-| `feature` | New behaviour or a design change that spans modules or needs decisions | [how] -> `grill-with-docs` -> `to-spec` -> [`architect`] -> `to-tickets` -> `tdd` per ticket -> `tidy` -> commit |
+| `feature` | New behaviour or a design change that spans modules or needs decisions | [how] -> `grill-with-docs` -> `to-spec` -> [`architect` + `interrogate`] -> `to-tickets` -> `tdd` per ticket -> `tidy` -> commit |
 | `small` | Short, contained change (UI tweak, copy, config, one function) | 1-2 files: `tdd` or a run-the-app check -> `tidy` -> commit. Several files or an interface change: `to-tickets` first |
 | `bug` | Something is broken, throwing, failing, or slow | `diagnosing-bugs` (ends in a regression test) -> `tidy` -> commit |
-| `understand` | The user wants to know how or why, and nothing should change | `how` / `why` / `explain` |
+| `understand` | The user wants to know how or why, and nothing should change | `how` / `why` / `explain` / `research` |
 | `refactor` | Restructure with no behaviour change | `codebase-design` [+ `improve-codebase-architecture`] -> `tdd` -> `tidy` -> commit |
-| `pr` | The user asks to open or update a PR | `review-loop` -> `pr-sketch` -> `gh pr create` |
+| `pr` | The user asks to open or update a PR | [`blast-radius`] -> `review-loop` -> `pr-sketch` -> `gh pr create` |
 
 Signals: how many files the change touches, whether an interface, schema, or public API changes, new behaviour versus wrong behaviour. A task too big and foggy for one session (greenfield project, whole subsystem) is `feature` run in slices: suggest the user run `/wayfinder` first to chart the decisions, then run each resolved slice through `feature`. `wayfinder` is user-only, so do not invoke it. If two routes fit equally, or the acceptance criteria are unclear, ask one question before routing. Do not write code while the task is unclear.
 
@@ -28,7 +28,7 @@ Signals: how many files the change touches, whether an interface, schema, or pub
 
 Read `routes/<route>.md` and follow it. `small` and `refactor` have their own files; `small` also covers the multi-file case.
 
-Where a route shows `[how]` or `[architect]`, run it only when the area is unfamiliar or the tickets cross a module seam.
+Where a route shows `[how]` or `[architect]`, run it only when the area is unfamiliar or the tickets cross a module seam. `[interrogate]` runs only when the design is contested. `[blast-radius]` runs only when the diff touches something other code depends on.
 
 ## 3. Rules for every route
 

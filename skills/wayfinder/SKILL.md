@@ -19,12 +19,12 @@ Every map and ticket has a **name**: its title. In everything the human reads (n
 
 ## Where it lives
 
-One folder per effort: `docs/plans/<effort-slug>/`.
+One folder per effort: `docs/plans/<effort-slug>/wayfinder/`.
 
-- The map is `docs/plans/<effort-slug>/MAP.md`, the canonical artifact.
-- Each decision ticket is `docs/plans/<effort-slug>/NN-<slug>.md`, numbered from `01` in the order created.
+- The map is `docs/plans/<effort-slug>/wayfinder/MAP.md`, the canonical artifact.
+- Each decision ticket is `docs/plans/<effort-slug>/wayfinder/NN-<slug>.md`, numbered from `01` in the order created.
 
-Specs and plans ship in the PR, so the answers stay readable after the session ends.
+Specs and plans ship in the PR, so the answers stay readable after the session ends. The `wayfinder/` subfolder keeps these decision tickets apart from the build tickets that `to-tickets` writes later in `docs/plans/<feature-slug>/`.
 
 ## The Map
 

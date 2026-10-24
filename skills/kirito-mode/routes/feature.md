@@ -2,7 +2,7 @@
 
 New behaviour or a design change across modules. Spec first, then a plan, then test-first code.
 
-0. **Too big?** If the task is too big and foggy for one session to hold (greenfield project, whole subsystem), stop and suggest `/wayfinder` to chart the decisions first. `wayfinder` is user-only. Run each slice it resolves through this route.
+0. **Too big?** Check the Signals in `SKILL.md`: a task too big and foggy for one session goes to `/wayfinder` first, then each resolved slice runs through this route.
 1. **Ground (optional).** If the area is unfamiliar, run `how` on it so the interview starts from facts.
 2. **Grill.** Run `grill-with-docs`. It interviews the user one round at a time and records terms in `GLOSSARY.md` and decisions in ADRs. If a question needs a runnable answer (state, business logic, a UI to see), run `prototype`, then bring the answer back. Keep steps 2-5 in one context window.
 3. **Spec.** Run `to-spec`. It writes `docs/specs/<feature>.md` with `Status: draft` and asks the user to confirm the test seams. Wait for the user to approve the spec. Do not start tickets on a draft.

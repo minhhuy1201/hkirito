@@ -68,7 +68,7 @@ Each new skill gets a place in a route of `/kirito-mode`, or is marked manual-on
 | `maintain-formal-verification-skill` | pstack | Copied | Manual only | None |
 | `blast-radius` | pstack | Ported: inline, the multi-model step removed | Model | `pr`, before `review-loop`, only when the diff touches a public interface, schema, data format, or widely imported export |
 | `interrogate` | pstack | Ported: one fresh `reviewer` subagent, lead-judgment buckets kept | Model | `feature`, after `architect`, only when the design is contested |
-| `show-me-your-work` | pstack | Copied, with its log script and template; references to `poteto-mode` and principle skills removed | Model | `feature` for long or unattended work, and `wayfinder` |
+| `show-me-your-work` | pstack | Ported: log script and template copied; the transcript audit is replaced by a git and files audit; one fresh `reviewer` reviews the trail only when it is committed | Model | `feature` for long or unattended work |
 | `correct` | pstack | Copied | Manual only | None |
 | `sharpen` | pstack | Copied | Manual only | None |
 | `research` | Matt | Copied | Model | `understand` |
@@ -92,7 +92,7 @@ Each new skill gets a place in a route of `/kirito-mode`, or is marked manual-on
 **Route changes.**
 
 - `feature`: `interrogate` after `architect` when the design is contested; a foggy task too big for one session goes to `wayfinder`; `show-me-your-work` for long or unattended work; each ticket readable cold, with `/clear` suggested between tickets on long features.
-- `bug`: revert what a refuted hypothesis motivated; suggest `/statechart` for state or ordering bugs.
+- `bug`: revert what a refuted hypothesis motivated; suggest `/statechart` for state or ordering bugs when `diagnosing-bugs` finds no tight loop.
 - `refactor`: subtract before adding; finish with a reader-load check and revert a change that does not lower it. The existing "Lock behaviour" step already pins behaviour and stays.
 - `understand`: `research` for external docs and APIs.
 - `pr`: `blast-radius` before `review-loop`, only when the diff touches something other code depends on.
