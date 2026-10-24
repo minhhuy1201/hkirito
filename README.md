@@ -17,12 +17,12 @@ flowchart LR
     R -->|bug| B1[diagnosing-bugs + regression test] --> FIN
     R -->|refactor| X1["codebase-design [+ improve-codebase-architecture]"] --> X2[subtract, tdd] --> FIN
     R -->|understand| U1[how / why / explain / research]
-    R -->|pr| P0[blast-radius] --> P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
+    R -->|pr| P0["[blast-radius]"] --> P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
 
     FIN[["checks green, spec/plan agree, tidy, branch check, commit"]]
 ```
 
-`[how]` runs only when the area is unfamiliar. `[architect]` runs when tickets cross a module seam, and `interrogate` joins it only when the design is contested. `review-loop` reports findings on two axes, Standards and Spec. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+`[how]` runs only when the area is unfamiliar. `[blast-radius]` runs only when the diff touches a public interface, schema, data format, or widely imported export. `[architect]` runs when tickets cross a module seam, and `interrogate` joins it only when the design is contested. `review-loop` reports findings on two axes, Standards and Spec. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
 
 ### Skills you type yourself
 

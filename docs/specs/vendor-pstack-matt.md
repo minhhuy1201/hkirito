@@ -25,7 +25,7 @@ Each new skill gets a place in a route of `/kirito-mode`, or is marked manual-on
 1. As the author, I want to draw a system's states as a chart from a TLA+ model (`statechart`), so that I can see a state or race bug as a numbered path.
 2. As the author, I want to turn an agreed chart into a TLA+ skeleton, so that a design bug shows up before code exists.
 3. As the author, I want to generate and maintain a project-local formal verification skill (`create-formal-verification-skill`, `maintain-formal-verification-skill`), so that the most expensive code has a checked model.
-4. As the author, I want `blast-radius` to run before review on every PR, so that breakage outside the diff is found and the one fact that makes the change safe is proved by running code.
+4. As the author, I want `blast-radius` to run before review on a PR whose diff touches an interface other code depends on, and to be skipped otherwise, so that breakage outside the diff is found and the one fact that makes the change safe is proved by running code.
 5. As the author, I want `blast-radius` to run inline with no multi-model step, so that it costs one session, not a fan-out.
 6. As the author, I want `interrogate` to challenge a contested design with one fresh `reviewer` subagent, so that I get adversarial review without paying for several models.
 7. As the author, I want `interrogate` to sort findings into Act on, Consider, and Noted, so that I see which findings block and which do not.
@@ -66,7 +66,7 @@ Each new skill gets a place in a route of `/kirito-mode`, or is marked manual-on
 | `statechart` | pstack | Copied, with its scripts and their tests | Manual only | Suggested by `bug` |
 | `create-formal-verification-skill` | pstack | Copied | Manual only | None |
 | `maintain-formal-verification-skill` | pstack | Copied | Manual only | None |
-| `blast-radius` | pstack | Ported: inline, the multi-model step removed | Model | `pr`, before `review-loop` |
+| `blast-radius` | pstack | Ported: inline, the multi-model step removed | Model | `pr`, before `review-loop`, only when the diff touches a public interface, schema, data format, or widely imported export |
 | `interrogate` | pstack | Ported: one fresh `reviewer` subagent, lead-judgment buckets kept | Model | `feature`, after `architect`, only when the design is contested |
 | `show-me-your-work` | pstack | Copied, with its log script and template; references to `poteto-mode` and principle skills removed | Model | `feature` for long or unattended work, and `wayfinder` |
 | `correct` | pstack | Copied | Manual only | None |
@@ -83,7 +83,7 @@ Each new skill gets a place in a route of `/kirito-mode`, or is marked manual-on
 - `review-loop` runs one reviewer per round that reports both axes, not two parallel subagents as Matt's `code-review` does. This trades some independence between axes for half the review cost.
 - `correct` stays a separate manual skill, not merged into `retro`. `retro` looks back at one session; `correct` looks across the repo's history. Merging can happen later if they overlap in use.
 - Manual-only skills get `disable-model-invocation: true`. Skills a route calls do not, because the flag also blocks the router.
-- `blast-radius` runs once per PR in the `pr` route, not in each code route, so it runs once over the whole change.
+- `blast-radius` runs once per PR in the `pr` route, not in each code route, so it runs once over the whole change. It runs only when the diff touches something other code depends on, to save tokens; the author asked for this after seeing the cost.
 
 **Porting rule for subagents.** A ported skill runs inline. It opens a subagent only when the raw output would exceed about 25K tokens, when the work needs independence from the author (review), or for at most three truly independent angles. It never passes a `model` override; agents take their model from their frontmatter.
 
@@ -95,7 +95,7 @@ Each new skill gets a place in a route of `/kirito-mode`, or is marked manual-on
 - `bug`: revert what a refuted hypothesis motivated; suggest `/statechart` for state or ordering bugs.
 - `refactor`: subtract before adding; finish with a reader-load check and revert a change that does not lower it. The existing "Lock behaviour" step already pins behaviour and stays.
 - `understand`: `research` for external docs and APIs.
-- `pr`: `blast-radius` before `review-loop`.
+- `pr`: `blast-radius` before `review-loop`, only when the diff touches something other code depends on.
 - Router rules: an empirical fork goes to `prototype` instead of a question to the user.
 
 **Provenance.** Each vendored `SKILL.md` carries a comment naming the upstream, the commit, and whether it is copied or ported. New pstack skills pin the cursor/plugins commit read for this spec; new Matt skills pin the mattpocock/skills commit read for this spec. `THIRD_PARTY.md` lists every new skill under its upstream. Existing pins stay as they are.
