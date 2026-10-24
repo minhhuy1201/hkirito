@@ -7,6 +7,7 @@ Skills in this repo are copied from, or adapted from, the projects below. Both a
 - Source: https://github.com/mattpocock/skills, commit `49dd158`
 - Copyright (c) 2026 Matt Pocock
 - Used in: `grilling`, `grill-with-docs`, `domain-modeling`, `tdd`, `codebase-design`, `diagnosing-bugs`, `prototype`, `improve-codebase-architecture`, `retro`, `handoff`, `writing-for-agents`, `to-spec` (adapted), `to-tickets` (adapted), `learn` (renamed from `teach`)
+- Added at commit `5beb35b`: `wait-what`, `to-questionnaire`, `wizard` (copied)
 
 ## cursor/plugins, pstack
 
