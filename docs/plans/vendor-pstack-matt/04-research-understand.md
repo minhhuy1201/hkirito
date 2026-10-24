@@ -6,9 +6,9 @@ Spec: [vendor-pstack-matt](../../specs/vendor-pstack-matt.md)
 
 **Blocked by:** None (can start immediately)
 
-**Status:** todo
+**Status:** in progress
 
-- [ ] `research` is vendored from mattpocock/skills, model-invocable, with a provenance comment
-- [ ] The `understand` route names `research` for questions about external docs and APIs
-- [ ] One run of the `understand` route in a throwaway repo prints the route line and produces a Markdown file whose claims each cite a source
-- [ ] `THIRD_PARTY.md` lists it
+- [x] `research` is vendored from mattpocock/skills, model-invocable, with a provenance comment
+- [x] The `understand` route names `research` for questions about external docs and APIs
+- [ ] One run of the `understand` route in a throwaway repo prints the route line and produces a Markdown file whose claims each cite a source (not run yet: needs a live research agent, left for ticket 10)
+- [x] `THIRD_PARTY.md` lists it
