@@ -45,11 +45,30 @@ def tokenize(segment):
         return shlex.split(segment, posix=True)
     except ValueError:
         return segment.split()  # unbalanced quotes etc. -> coarse fallback
-def is_git_push(segment):
-    toks = tokenize(segment)
+OPERATOR_CHARS = set("&|;\n()")
+def command_segments(command):
+    # Lex the whole command, not line by line, so quoted text and a heredoc inside
+    # "$(...)" stay one token and a commit message that mentions `git push` is not a push.
+    lexer = shlex.shlex(command, posix=True, punctuation_chars="&|;\n()<>")
+    lexer.whitespace_split = True
+    lexer.whitespace = " \t\r"
+    lexer.commenters = ""
+    try:
+        tokens = list(lexer)
+    except ValueError:
+        return [tokenize(s) for s in re.split(r"\|\||&&|;|\||\n|&", command)]
+    segments = [[]]
+    for t in tokens:
+        if set(t) <= OPERATOR_CHARS:
+            segments.append([])
+        else:
+            segments[-1].append(t)
+    return segments
+HEAD_MOVING = {"commit", "merge", "rebase", "reset", "cherry-pick", "revert", "am", "pull"}
+def git_subcommand(toks):
     gi = next((i for i, t in enumerate(toks) if t.rsplit("/", 1)[-1] == "git"), None)
     if gi is None:
-        return False
+        return None
     j = gi + 1
     while j < len(toks):
         t = toks[j]
@@ -57,11 +76,19 @@ def is_git_push(segment):
             j += 2; continue
         if t.startswith("-"):
             j += 1; continue
-        return t == "push"  # first non-option token is the git subcommand
-    return False
-# Split on shell operators first so chained `... && git push` is caught.
-segments = re.split(r"\|\||&&|;|\||\n|&", cmd)
-print("PUSH" if any(is_git_push(s) for s in segments) else "")
+        return t  # first non-option token is the git subcommand
+    return None
+subcommands = [git_subcommand(toks) for toks in command_segments(cmd)]
+if "push" not in subcommands:
+    print("")
+    sys.exit(0)
+# The marker is compared with HEAD before the whole command runs, so a commit chained
+# ahead of any push would be pushed under the old marker.
+moved = any(
+    s == "push" and any(m in HEAD_MOVING for m in subcommands[:i])
+    for i, s in enumerate(subcommands)
+)
+print("MOVED" if moved else "PUSH")
 PY
 )"
 
@@ -73,7 +100,17 @@ if printf '%s' "$input" | grep -Eq 'git[^"]*push|push[^"]*git'; then
 fi
 
 case "$verdict" in
-  PUSH) ;;                                   # confidently a push -> gate it
+  MOVED)
+    cat >&2 <<EOF
+🔴 Push blocked: this command moves HEAD (commit, merge, rebase, ...) and pushes in one go.
+
+The review marker is checked before the command runs, so the new commit would reach the
+remote without a review and the PR's Self-review sha would go stale.
+Run the commit as its own Bash call, run the pr-review gate on the new HEAD, update the
+sha block in the PR body, then push with a standalone \`git push\`.
+EOF
+    exit 2 ;;
+  PUSH) ;;                                 # confidently a push -> gate it
   ERR)  [ "$looks_pushy" = "1" ] || exit 0 ;; # parser failed -> gate iff push-like
   *)    exit 0 ;;                            # confidently not a push -> allow
 esac
