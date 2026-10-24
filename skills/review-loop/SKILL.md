@@ -13,9 +13,11 @@ A Markdown file at `<scratchpad>/review-log.md` (the session scratchpad; outside
 
 - `## Spec` - task spec and acceptance criteria, written once before round 1 and left byte-identical afterwards.
 - `## Snapshots` - one line per round: `R<n>: <tree-sha>`.
-- `## Findings` - one line per finding: `[R<n>-#<id>] <severity> file:line - issue → <status>`.
+- `## Findings` - one line per finding: `[R<n>-#<id>] <severity> <axis> file:line - issue → <status>`. `<axis>` is `standards` or `spec`.
 
 Severities: `must-fix`, `should-fix`, `nit`, `question` (the reviewer needs the author's clarification).
+
+Axes: every finding sits on one of two axes. **Standards** asks whether the change follows the repo's documented coding standards and the smell baseline in `code-smells.md` (next to this file). **Spec** asks whether the change does what the log's `## Spec` asked. A change can pass one axis and fail the other, so report them apart and never merge or rerank across axes.
 
 Statuses:
 
@@ -85,14 +87,21 @@ Verify every FIXED and ANSWERED item, and rule ACCEPTED or UPHELD on every DISPU
 Re-raise a WONTFIX item only with a reason the log does not already answer.
 Run the project's tests, lint, and typecheck; attach the failing output to any finding it backs.
 
+## Two axes
+Review along two separate axes and tag every finding with its `axis`.
+
+**Standards.** Find every file that documents how code is written here (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `CODING_STANDARDS.md`, lint and format config, docs under `docs/`). Report (a) each place the diff breaks a documented standard, citing the standard's file and rule, and (b) each smell from `<path to code-smells.md>`, naming it and quoting the hunk. Read `<path to code-smells.md>` in full first. A documented standard overrides the baseline. Baseline hits are judgement calls. Skip anything tooling enforces.
+
+**Spec.** Compare the diff to the task spec above. Report (a) requirements that are missing or only partly done, (b) behaviour in the diff that the spec did not ask for (scope creep), and (c) requirements that look done but are wrong. Quote the spec line for each finding. With no spec section, skip this axis and say so.
+
 ## Output
 JSON only:
 {
   "verdicts": [{"id": "R<n>-#<id>", "verdict": "VERIFIED | NOT_FIXED | ACCEPTED | UPHELD", "reason": "..."}],
-  "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question", "file": "...", "line": 0, "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
+  "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question", "axis": "standards | spec", "file": "...", "line": 0, "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
   "needs_human_review": ["file:line - zone - question for the human"]
 }
 Write each needs_human_review zone and question in Vietnamese; everything else in English.
 ```
 
-`NOT_FIXED` reopens the item as `OPEN`. After each round, update the log, then relay `needs_human_review` to the user verbatim, one line per item, as its own block after the findings.
+`NOT_FIXED` reopens the item as `OPEN`. Fill `<path to code-smells.md>` with the absolute path of that file in this skill's folder. After each round, update the log, then relay the findings to the user under `## Standards` and `## Spec` headings, never merged or reranked across axes, and relay `needs_human_review` verbatim, one line per item, as its own block after the findings.
