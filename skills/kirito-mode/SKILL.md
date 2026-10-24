@@ -22,7 +22,7 @@ Pick one route from the task text and a quick look at the code. Print one line f
 | `refactor` | Restructure with no behaviour change | `codebase-design` [+ `improve-codebase-architecture`] -> `tdd` -> `tidy` -> commit |
 | `pr` | The user asks to open or update a PR | `review-loop` -> `pr-sketch` -> `gh pr create` |
 
-Signals: how many files the change touches, whether an interface, schema, or public API changes, new behaviour versus wrong behaviour. A task too big and foggy for one session (greenfield project, whole subsystem) is `feature` run in slices: grill, write the spec, and ticket only the first slice. If two routes fit equally, or the acceptance criteria are unclear, ask one question before routing. Do not write code while the task is unclear.
+Signals: how many files the change touches, whether an interface, schema, or public API changes, new behaviour versus wrong behaviour. A task too big and foggy for one session (greenfield project, whole subsystem) is `feature` run in slices: suggest the user run `/wayfinder` first to chart the decisions, then run each resolved slice through `feature`. `wayfinder` is user-only, so do not invoke it. If two routes fit equally, or the acceptance criteria are unclear, ask one question before routing. Do not write code while the task is unclear.
 
 ## 2. Run the route
 
