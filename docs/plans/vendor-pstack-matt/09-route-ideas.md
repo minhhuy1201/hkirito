@@ -6,9 +6,9 @@ Spec: [vendor-pstack-matt](../../specs/vendor-pstack-matt.md)
 
 **Blocked by:** 03 (both edit the `bug` route)
 
-**Status:** todo
+**Status:** done
 
-- [ ] The `bug` route says to revert what a refuted hypothesis motivated
-- [ ] The `refactor` route keeps its "Lock behaviour" step, adds subtract-before-add, and ends with a reader-load check that reverts a change that does not lower it
-- [ ] The router's rules send a question that running something can answer to `prototype`, and keep asking the user for intent and preference
-- [ ] `THIRD_PARTY.md` credits the pstack playbooks for these ideas
+- [x] The `bug` route says to revert what a refuted hypothesis motivated
+- [x] The `refactor` route keeps its "Lock behaviour" step, adds subtract-before-add, and ends with a reader-load check that reverts a change that does not lower it
+- [x] The router's rules send a question that running something can answer to `prototype`, and keep asking the user for intent and preference
+- [x] `THIRD_PARTY.md` credits the pstack playbooks for these ideas

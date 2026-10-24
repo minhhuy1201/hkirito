@@ -33,6 +33,7 @@ Where a route shows `[how]` or `[architect]`, run it only when the area is unfam
 ## 3. Rules for every route
 
 - **Verify before claiming done.** Run the project's test, typecheck, and lint commands and read the output. Never write "done", "fixed", or "passing" from memory. If a check cannot run, say which and why.
+- **Run it before you ask.** If a question about behaviour, timing, layout, or output can be settled by running something, build a throwaway `prototype` and let the result answer. Ask the user only about intent and preference that no experiment can settle.
 - **Verify each review finding** against the code before acting on it. Do not agree by reflex and do not apply a suggestion you have not checked.
 - **Keep spec, plan, and code in step.** When implementation shows the spec or plan is wrong, stop and update the right file first: the spec if intended behaviour changes, the plan if only the approach changes.
 - **Files, not tracker.** Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. They ship in the PR.
