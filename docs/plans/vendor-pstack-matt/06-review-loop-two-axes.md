@@ -12,5 +12,5 @@ Spec: [vendor-pstack-matt](../../specs/vendor-pstack-matt.md)
 - [x] The smell baseline (twelve Fowler smells, each a judgement call) lives beside `review-loop` as a reference file the reviewer reads
 - [x] Each finding in the JSON output carries an axis; the main session relays findings grouped by axis and never reranks across axes
 - [x] The final round through `pr-review` keeps that skill's template unchanged
-- [ ] One round on a throwaway change that breaks a written standard and adds unrequested behaviour returns at least one finding on each axis (not run yet, left for ticket 10)
+- [ ] One round on a throwaway change that breaks a written standard and adds unrequested behaviour returns at least one finding on each axis (not run yet)
 - [x] `THIRD_PARTY.md` credits Matt's `code-review` for the axes and the smell baseline

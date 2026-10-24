@@ -11,5 +11,5 @@ Spec: [vendor-pstack-matt](../../specs/vendor-pstack-matt.md)
 - [x] `blast-radius` is ported: it runs inline, the multi-model step is gone, and it does not carry `disable-model-invocation`
 - [x] Its references to `how`, `why`, and `unslop` resolve to hkirito's skills
 - [x] The `pr` route runs it before `review-loop` and relays its writeup to the user
-- [ ] One run of the `pr` route on a throwaway change shows the blast-radius writeup before the first review round (not run yet, left for ticket 10)
+- [ ] One run of the `pr` route on a throwaway change shows the blast-radius writeup before the first review round (not run yet)
 - [x] Provenance comment marks it as ported; `THIRD_PARTY.md` lists it

@@ -2,7 +2,7 @@
 name: blast-radius
 description: "Find what a change could break somewhere else before it ships, beyond the diff, and prove the one fact it's safe because of by running real code instead of writing it up. Use for 'blast radius of X', 'what could this break', or reviewing a small diff you don't trust."
 ---
-<!-- vendored from cursor/plugins pstack@9580c23 (MIT), ported: inline, multi-model arena step removed, see THIRD_PARTY.md -->
+<!-- vendored from cursor/plugins pstack@9580c23 (MIT), ported: inline, multi-model step removed, see THIRD_PARTY.md -->
 
 # Blast radius
 
