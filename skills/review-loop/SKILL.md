@@ -99,9 +99,9 @@ JSON only:
 {
   "verdicts": [{"id": "R<n>-#<id>", "verdict": "VERIFIED | NOT_FIXED | ACCEPTED | UPHELD", "reason": "..."}],
   "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question", "axis": "standards | spec", "file": "...", "line": 0, "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
-  "needs_human_review": ["file:line - zone - question for the human"]
+  "needs_human_review": "<one Markdown block, in the layout agents/reviewer.md defines>"
 }
-Write each needs_human_review zone and question in Vietnamese; everything else in English.
+Write needs_human_review in Vietnamese; everything else in English.
 ```
 
-`NOT_FIXED` reopens the item as `OPEN`. Fill `<path to code-smells.md>` with the absolute path of that file in this skill's folder. After each round, update the log, then relay the findings to the user under `## Standards` and `## Spec` headings, never merged or reranked across axes, and relay `needs_human_review` verbatim, one line per item, as its own block after the findings.
+`NOT_FIXED` reopens the item as `OPEN`. Fill `<path to code-smells.md>` with the absolute path of that file in this skill's folder. After each round, update the log, then relay the findings to the user under `## Standards` and `## Spec` headings, never merged or reranked across axes, and relay `needs_human_review` verbatim as its own block after the findings.
