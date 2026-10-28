@@ -26,4 +26,12 @@ End with a **Needs human review** section: every hunk in the change that touches
 - Concurrency, caching, and retry or idempotency logic
 - User-facing copy, legal text, and accessibility
 
-One line per item: `file:line` - zone - the question the human must answer, with zone and question written in Vietnamese. Write "không có" when the change touches no zone.
+Write the section in Vietnamese, laid out for a skim:
+
+- First line: `**Needs human review** · <n> mục · 🟠 <a> cần chốt trước merge · ⚪ <b> chỉ cần xác nhận`.
+- Group items under the zone they touch, one bold heading per zone with its short label: `🧭 Nghiệp vụ`, `🔐 Quyền & tin cậy`, `💰 Tiền & quota`, `🗄️ Dữ liệu & migration`, `🔌 API công khai`, `⚙️ Hạ tầng & config`, `📦 Dependency`, `🔁 Đồng thời & retry`, `✍️ Nội dung & a11y`. Order zones by their most urgent item, ties keeping the order of the list above; skip empty zones.
+- One line per item: `🟠` or `⚪`, then the question, then ` - ` and the location. 🟠 means a wrong answer loses data, opens a security hole, costs money, or breaks users, so it should be settled before merge (separate from the pr-review 🔴 Blocker gate); ⚪ means a product or ops assumption to confirm. List 🟠 items first.
+- Keep each question under ~20 words: lead with the decision the human makes, drop the background the code already shows, and end with `?`.
+- Write the location as the shortest path suffix that is unique within the list (`webhookRegistry.ts:95`, `[childId]/webhook/reregister/route.ts:59`), in backticks. When one answer settles several hunks, merge them into one item and list every location: `webhookRegistry.ts:95, :104`.
+
+Write "Needs human review: không có" when the change touches no zone.
