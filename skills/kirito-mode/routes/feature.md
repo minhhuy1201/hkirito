@@ -10,7 +10,7 @@ New behaviour or a design change across modules. Spec first, then a plan, then t
 5. **Plan.** Run `to-tickets`. It writes `docs/plans/<feature>/NN-<slug>.md`, one vertical slice per file, with blocking edges. Write each ticket so a fresh session can do it cold: a reader with no memory of this conversation must be able to start. Wait for the user to approve the breakdown.
 6. **Implement.** For each ticket, blockers first:
    - Default: run `tdd` inline at the seams agreed in the spec.
-   - Delegate mode (only when the user passed `--delegate` or asked for `implementer` by name): dispatch one fresh `implementer` per ticket with a new `Agent` call, the ticket and spec paths, and no `model` override. Never resume an earlier implementer with `SendMessage`. Then read its diff and rerun the ticket's tests and typecheck yourself. Settle any conflict it hands back with the user before the next ticket.
+   - Delegate mode (see `SKILL.md` section 2): dispatch one fresh `implementer` per ticket with a new `Agent` call, the ticket and spec paths, and no `model` override. Never resume an earlier implementer with `SendMessage`. Then read its diff and rerun the ticket's tests and typecheck yourself. Settle any conflict it hands back with the user before the next ticket.
 
    Mark the ticket `Status: done` when its acceptance criteria pass. Run typecheck between tickets and the full suite after the last. On a long feature, suggest `/clear` between tickets, since each ticket is self-contained. For long or unattended work, keep a decision log with `show-me-your-work`.
 7. **Finish.** Follow the Finish section of `SKILL.md`. Commit per ticket or once per feature, whichever keeps each commit reviewable.
