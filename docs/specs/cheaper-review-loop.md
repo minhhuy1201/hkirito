@@ -23,7 +23,7 @@ Ten changes, all inside the harness:
 1. The `pr` route starts from a clean context: when the session already did other work, it writes a handoff into a review log stored under `.git/`, and asks the user to `/clear` and resume the `pr` route from that log.
 2. At most **3 review rounds, gate included**. Every round follows the `pr-review` checklist, so a round that reviews the committed `HEAD` and finds no `must-fix` *is* the gate. No separate full re-review.
 3. The reviewer prompt carries the check results (tests, lint, typecheck) and a diff stat the main session already has; the reviewer re-runs a check only when it needs evidence the given output does not provide.
-4. In delegate mode, small review fixes (at most 2 files, no interface change) are made inline by the main session; larger ones go to one implementer for the whole batch.
+4. In delegate mode, small review fixes (at most 2 files, no interface change) are made inline by the main session, except a `must-fix` on an unescalated `haiku` ticket, which escalates to Sonnet in the batch; larger ones go to one implementer for the whole batch.
 5. Reviewers report findings by class: one finding per kind of defect, listing every location, so one fix pass handles all of them.
 6. A token usage script reports per-session spend by main session, agent type, and each reviewer, plus cache rewrites after idle gaps.
 7. A deterministic gate before every reviewer dispatch: the project's tests, lint, and typecheck must pass first. Red checks are fixed without calling the reviewer, so the reviewer spends its effort on design, edge cases, and whether the change meets the spec. The implementer's done condition widens to the same three checks.
