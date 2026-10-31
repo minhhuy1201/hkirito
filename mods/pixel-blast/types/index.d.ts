@@ -1,10 +1,7 @@
-export type BlastLevel = 'medium' | 'high' | 'critical'
-
 export type BlastItem = { label: string; bytes?: number }
 
 export type BlastReport = {
   command: string
-  level: BlastLevel
   noun: string
   items: BlastItem[]
   total: number

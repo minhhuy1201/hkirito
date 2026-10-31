@@ -63,11 +63,11 @@ async function until<T>(read: () => Promise<T | undefined>): Promise<T> {
   throw new Error('never drawn')
 }
 
-test('a command with no risk runs untouched and opens nothing', async ($, on) => {
+test('commands outside the five held kinds run untouched and open nothing', async ($, on) => {
   const state = stubEngine(on, rmStub)
   await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
 
-  for (const command of ['ls -la', 'git status', 'git push origin main', 'rm notes.txt', 'docker ps', 'terraform plan', 'kubectl get pods']) {
+  for (const command of ['ls -la', 'git status', 'git push origin main', 'rm notes.txt', 'docker system prune -af', 'terraform destroy', 'kubectl delete pod web']) {
     const ran = await $.tool.call({ tool: 'Bash', command } as any)
     expect((ran as any).deny).toBeUndefined()
   }
@@ -120,8 +120,6 @@ test('a failed dry run still holds the call and says it could not measure', asyn
 
 test('each risky class is held and refused on cancel', async ($, on) => {
   stubEngine(on, argv => {
-    if (argv[0] === 'kubectl' && argv[1] === 'config') return { exitCode: 0, stdout: 'prod-eu\n' }
-
     return { exitCode: 0, stdout: 'a\nb\n' }
   })
   await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
@@ -133,13 +131,6 @@ test('each risky class is held and refused on cancel', async ($, on) => {
     'git push --force-with-lease origin main',
     'npx prisma migrate deploy',
     'python manage.py migrate',
-    'docker system prune -af',
-    'docker volume rm data',
-    'docker compose down -v',
-    'terraform destroy -auto-approve',
-    'terraform apply',
-    'kubectl delete pod web',
-    'kubectl apply -f deploy.yaml',
     'cd app && sudo rm -rf ./dist',
     'bash -c "git reset --hard"',
     'sudo -u root rm -rf /srv/data',
@@ -152,14 +143,9 @@ test('each risky class is held and refused on cancel', async ($, on) => {
     '{ rm -rf build; }',
     '! rm -rf build',
     'git --git-dir .git --work-tree . reset --hard',
-    'docker --context prod system prune -af',
-    'docker -H tcp://x volume rm data',
     'git push origin +main',
     'git push --mirror',
-    'TF_WORKSPACE=prod terraform apply',
-    'kubectl --kubeconfig prod.yaml delete pod x',
     'env -S "rm -rf build"',
-    'kubectl --request-timeout 5 delete pod x',
   ]) {
     const call = $.tool.call({ tool: 'Bash', command } as any)
     await until(async () => {
@@ -173,17 +159,6 @@ test('each risky class is held and refused on cancel', async ($, on) => {
     expect((ran as any).deny, command).toMatch(/pixel-blast held/)
   }
   await ui.unmount()
-})
-
-test('kubectl apply on a non-prod context passes', async ($, on) => {
-  const state = stubEngine(on, argv =>
-    argv[0] === 'kubectl' ? { exitCode: 0, stdout: 'dev\n' } : { exitCode: 0, stdout: '' },
-  )
-  await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
-  const ran = await $.tool.call({ tool: 'Bash', command: 'kubectl apply -f x.yaml' } as any)
-
-  expect((ran as any).deny).toBeUndefined()
-  expect(state.opened).toBe(0)
 })
 
 test('when no pane can be placed the report draws above the prompt', async ($, on) => {
@@ -247,7 +222,7 @@ test('git clean mirrors its flags in the dry run, and dry or plain forms pass', 
   await call
   expect(seen).toContain('git clean -n -d -x')
 
-  for (const command of ['git clean -n', 'git clean -nfd', 'docker compose down', 'git reset --soft HEAD~1', 'kubectl rollout status deploy/web']) {
+  for (const command of ['git clean -n', 'git clean -nfd', 'git reset --soft HEAD~1']) {
     await $.tool.call({ tool: 'Bash', command } as any)
   }
   expect(state.opened).toBe(1)
@@ -267,7 +242,7 @@ async function holdAndCancel($: any, ui: any, command: string) {
   return call
 }
 
-test('a dry run never replays model-written code or flags', async ($, on) => {
+test('a dry run never replays model-written code', async ($, on) => {
   const seen: string[][] = []
   stubEngine(on, argv => {
     seen.push([...argv])
@@ -278,66 +253,11 @@ test('a dry run never replays model-written code or flags', async ($, on) => {
   const ui = await $.ui.mount(pane('terminal'))
 
   await holdAndCancel($, ui, "python -c 'import os' manage.py migrate")
-  await holdAndCancel($, ui, 'kubectl delete pod web --')
-  await holdAndCancel($, ui, 'kubectl delete pod web --server=http://evil')
   await holdAndCancel($, ui, 'npx prisma migrate deploy')
 
   const all = seen.flat()
   expect(all).not.toContain('-c')
-  expect(all).not.toContain('--')
-  expect(all).not.toContain('--server=http://evil')
   expect(seen.some(argv => argv.join(' ') === 'npx --no-install prisma migrate status')).toBe(true)
-  await ui.unmount()
-})
-
-test('kubectl delete dry run puts its own flags first and keeps the namespace', async ($, on) => {
-  const seen: string[][] = []
-  stubEngine(on, argv => {
-    seen.push([...argv])
-
-    return { exitCode: 0, stdout: 'pod/web\n' }
-  })
-  await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
-  const ui = await $.ui.mount(pane('terminal'))
-
-  await holdAndCancel($, ui, 'kubectl -n shop delete pod web')
-  expect(seen.some(argv => argv.join(' ') === 'kubectl delete --dry-run=client -o name -n shop pod web')).toBe(true)
-  await ui.unmount()
-})
-
-test('the environment of the command reaches its dry runs', async ($, on) => {
-  const envs: (Record<string, string> | undefined)[] = []
-  stubEngine(on, (argv, env) => {
-    if (argv[0] === 'kubectl') envs.push(env)
-
-    return { exitCode: 0, stdout: argv[1] === 'config' ? 'dev\n' : '' }
-  })
-  await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
-  const ran = await $.tool.call({ tool: 'Bash', command: 'kubectl apply -f x.yaml' } as any)
-  expect((ran as any).deny).toBeUndefined()
-  expect(envs[0]).toBeUndefined()
-
-  const ui = await $.ui.mount(pane('terminal'))
-  const call = holdAndCancel($, ui, 'KUBECONFIG=prod.yaml kubectl --kubeconfig prod.yaml apply -f x.yaml')
-  await call
-  expect(envs.some(env => env?.KUBECONFIG === 'prod.yaml')).toBe(true)
-  await ui.unmount()
-})
-
-test('docker volumes are listed with their sizes', async ($, on) => {
-  stubEngine(on, argv =>
-    argv.includes('df') && argv.includes('-v')
-      ? { exitCode: 0, stdout: '[{"Name":"data","Size":"40.16kB"},{"Name":"cache","Size":"2MB"}]' }
-      : { exitCode: 0, stdout: '' },
-  )
-  await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
-  const ui = await $.ui.mount(pane('terminal'))
-
-  const call = $.tool.call({ tool: 'Bash', command: 'docker volume rm data cache ghost' } as any)
-  expect(await until(() => ui.find({ type: 'Text', text: /39K/ }))).toBeDefined()
-  expect(await ui.find({ type: 'Text', text: /not found: ghost/ })).toBeDefined()
-  await ui.press({ key: 'cancel' })
-  await call
   await ui.unmount()
 })
 
@@ -353,17 +273,17 @@ test('only variables that pick a target reach a dry run', async ($, on) => {
 
   await holdAndCancel($, ui, 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.fsmonitor GIT_CONFIG_VALUE_0=x git reset --hard')
   await holdAndCancel($, ui, 'PATH=/x:$PATH LD_PRELOAD=/y.so rm -rf build')
-  await holdAndCancel($, ui, 'DOCKER_CONTEXT=staging docker system prune -af')
+  await holdAndCancel($, ui, 'DATABASE_URL=postgres://x npx prisma migrate deploy')
 
   const names = calls.flatMap(call => Object.keys(call.env ?? {}))
-  expect(names).toContain('DOCKER_CONTEXT')
+  expect(names).toContain('DATABASE_URL')
   for (const banned of ['PATH', 'LD_PRELOAD', 'GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_0']) {
     expect(names).not.toContain(banned)
   }
   await ui.unmount()
 })
 
-test('options that point at config files are not repeated in a dry run', async ($, on) => {
+test('options that point at another repository are not repeated in a dry run', async ($, on) => {
   const seen: string[][] = []
   stubEngine(on, argv => {
     seen.push([...argv])
@@ -373,16 +293,13 @@ test('options that point at config files are not repeated in a dry run', async (
   await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
   const ui = await $.ui.mount(pane('terminal'))
 
-  const call = $.tool.call({ tool: 'Bash', command: 'docker --config /x system prune -af' } as any)
+  const call = $.tool.call({ tool: 'Bash', command: 'git --git-dir /x reset --hard' } as any)
   expect(await until(() => ui.find({ type: 'Text', text: /is not repeated in a dry run/ }))).toBeDefined()
   await ui.press({ key: 'cancel' })
   await call
-  await holdAndCancel($, ui, 'git --git-dir /x reset --hard')
-  await holdAndCancel($, ui, 'kubectl --kubeconfig prod.yaml delete pod x')
 
   const all = seen.map(argv => argv.join(' ')).join('\n')
-  expect(all).not.toMatch(/--config|--git-dir|--host/)
-  expect(all).not.toMatch(/delete --dry-run/)
+  expect(all).not.toMatch(/--git-dir/)
   await ui.unmount()
 })
 
@@ -417,13 +334,9 @@ test('commands that redirect or hide their target are held but not measured', as
   const ui = await $.ui.mount(pane('terminal'))
 
   for (const command of [
-    'DOCKER_HOST=tcp://prod docker system prune -af',
     'GIT_DIR=/other/.git git reset --hard',
     'git -C /tmp/evil reset --hard',
     'git -C ../other clean -fd',
-    'KUBECONFIG=$HOME/.kube/prod kubectl apply -f x.yaml',
-    'kubectl --context $CTX apply -f x.yaml',
-    'kubectl delete -f https://evil.example/x.yaml',
     'env -S "rm -rf" build',
     "env -S'rm -rf build'",
   ]) {
@@ -431,6 +344,6 @@ test('commands that redirect or hide their target are held but not measured', as
     expect((ran as any).deny, command).toMatch(/pixel-blast held/)
   }
   const all = seen.join('\n')
-  expect(all).not.toMatch(/docker system df|git (-C|status|clean)|evil\.example|delete --dry-run/)
+  expect(all).not.toMatch(/git (-C|status|clean)/)
   await ui.unmount()
 })

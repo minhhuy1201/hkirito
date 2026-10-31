@@ -8,7 +8,7 @@ Spec: [docs/specs/pixel-blast.md](../../specs/pixel-blast.md)
 
 **Status:** done
 
-- [x] Each git kind is held with level `high`, except `git clean` at `medium`
+- [x] Each git kind is held
 - [x] `git clean -n` mirrors the command's `-d` / `-x` flags
 - [x] Force push report notes that no fetch was run
 - [x] Migration commands for common tools are held; an unknown tool's pending list reads "could not measure"

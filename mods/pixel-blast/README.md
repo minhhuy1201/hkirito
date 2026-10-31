@@ -19,19 +19,14 @@ Press `1` and the command runs as written. Press `2`, press Esc, or interrupt th
 
 | Class | Commands |
 | --- | --- |
-| Delete | `rm -r` / `rm -rf` (wide targets such as `/`, `~`, `.` are `high`) |
-| Git | `git reset --hard`, force push (`--force`, `-f`, `--force-with-lease`) |
+| Delete | `rm -r` / `rm -rf` |
+| Git | `git reset --hard`, force push (`--force`, `-f`, `--force-with-lease`, `--mirror`, `+refspec`) |
 | Git | `git clean -f` (with `-d`, `-x`) |
 | Migrations | prisma, rails/rake, alembic, flyway, knex, sequelize, django, typeorm, drizzle-kit, goose, dbmate |
-| Docker | `system prune`, `volume rm`, `volume prune`, `compose down -v` |
-| Terraform / OpenTofu | `destroy` |
-| Terraform / OpenTofu | `apply` |
-| Kubernetes | `kubectl delete` |
-| Kubernetes | `apply`, `patch`, `scale`, `rollout`, `edit`, `replace`, ... on a context whose name contains `prod` |
 
-Everything else runs untouched. `sh -c "..."`, `sudo`, `&&` chains and pipes are looked through.
+Everything else runs untouched, including Docker, Terraform and kubectl. `sh -c "..."`, `sudo`, `&&` chains and pipes are looked through.
 
-Dry runs never use a shell, never run `terraform plan`, and never fetch a remote. When one fails, the call is still held and the report says `could not measure`.
+Dry runs never use a shell and never fetch a remote or a package. When one fails, the call is still held and the report says `could not measure`.
 
 ## Look
 
@@ -66,6 +61,6 @@ The hold runs before Claude Code's own permission prompt, so the dry runs also r
 
 ## Limits
 
-Dry runs use only the variables that pick a target (`KUBECONFIG`, `DOCKER_CONTEXT`, `TF_WORKSPACE`, `DATABASE_URL`, ...) and never `PATH` or `LD_*`. Options that name config files (`docker --config`, `git --git-dir`) are not repeated, so those commands are held but not measured. `git -C <dir>` is repeated only for a directory inside the working directory. Dry runs of migrations run the project's own status command, so measuring inside a repo you do not trust is not safe.
+Dry runs use only the variables that pick a target (`DATABASE_URL`, `RAILS_ENV`, `DJANGO_SETTINGS_MODULE`, ...) and never `PATH` or `LD_*`. Options that point git at another repository (`--git-dir`, `GIT_DIR`) are not repeated, so those commands are held but not measured. `git -C <dir>` is repeated only for a directory inside the working directory. Dry runs of migrations run the project's own status command, so measuring inside a repo you do not trust is not safe.
 
 This is a safety net, not a permission system. It reads the command text, so `$(...)`, aliases and scripts that call `rm` get past it. Globs are not expanded, so `rm -rf build/*` is held but not measured. A hot reload of the mod during a hold refuses the held command. Use permission rules for a hard block.

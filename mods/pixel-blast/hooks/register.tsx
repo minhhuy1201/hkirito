@@ -41,7 +41,6 @@ export const register: Register = on => {
         .run(argv, { timeoutMs: DRY_RUN_TIMEOUT_MS, ...(env === undefined || Object.keys(env).length === 0 ? {} : { env }) })
         .catch(() => null)
     const report = await measure(run, risk, command)
-    if (report === null) return next(e)
 
     // Time spent inside a `$` call does not count against the hook's budget.
     // An interrupt aborts the sleep itself, which is a normal way out.
@@ -92,14 +91,14 @@ export const register: Register = on => {
     return next(e)
   }).catch((_, e, next) => next(e))
 
-  const draw = (ui: ReportViewProps['ui'], held: BlastHeld, columns: number, surface: string) =>
+  const draw = (ui: ReportViewProps['ui'], entry: BlastHeld, columns: number, surface: string) =>
     drawReport({
       ui,
-      report: held.report,
+      report: entry.report,
       columns,
       isTerminal: surface === 'terminal',
-      onProceed: () => decide(held.id, 'proceed'),
-      onCancel: () => decide(held.id, 'cancel'),
+      onProceed: () => decide(entry.id, 'proceed'),
+      onCancel: () => decide(entry.id, 'cancel'),
     })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {

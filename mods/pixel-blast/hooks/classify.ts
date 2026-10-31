@@ -1,33 +1,24 @@
-import type { BlastLevel } from '../types'
-
 export type RiskKind =
   | 'rm'
   | 'git-reset'
   | 'git-clean'
   | 'git-push'
   | 'migration'
-  | 'docker'
-  | 'terraform'
-  | 'kubectl'
 
 export type Risk = {
   kind: RiskKind
   sub: string
-  level: BlastLevel
   argv: string[]
   targets: string[]
-  bin: string
   prefix: string[]
   options: string[]
   env: Record<string, string>
   unappliedEnv: string[]
-  // Options a dry run must not repeat (docker --config, git --git-dir): they point at
-  // files that can load code.
+  // Options a dry run must not repeat (git --git-dir): they point at files that can load code.
   unsafe: string[]
   flags: string
 }
 
-const LEVEL_RANK: Record<BlastLevel, number> = { medium: 1, high: 2, critical: 3 }
 const WRAPPER_VALUE_FLAGS = new Map<string, ReadonlySet<string>>([
   ['sudo', new Set(['-u', '-g', '-h', '-p', '-C', '-D', '-r', '-t', '-U', '-R', '-T'])],
   ['doas', new Set(['-u', '-C'])],
@@ -45,38 +36,18 @@ const RESERVED_WORDS = new Set(['then', 'do', 'else', 'elif', 'if', 'while', 'un
 const NO_FLAG_VALUES: ReadonlySet<string> = new Set()
 const GIT_VALUE_GLOBALS = new Set(['--namespace', '--config-env'])
 const GIT_UNSAFE_GLOBALS = new Set(['--git-dir', '--work-tree'])
-const DOCKER_VALUE_GLOBALS = new Set([
-  '--context', '-c', '-H', '--host', '--config', '-l', '--log-level',
-  '--tlscacert', '--tlscert', '--tlskey',
-])
-const DOCKER_FORWARDED_GLOBALS = new Set(['--context', '-c'])
-const DOCKER_UNSAFE_GLOBALS = new Set(['-H', '--host', '--config'])
-// Variables that redirect a command to another daemon or repository: a dry run
-// without them would measure the wrong target, and with them it can run code.
-const UNSAFE_ENV = ['DOCKER_HOST', 'DOCKER_CONFIG', 'GIT_DIR', 'GIT_WORK_TREE']
-const KUBECTL_FORWARDED_FLAGS = new Set(['--context', '--kubeconfig'])
+// Variables that redirect git to another repository: a dry run without them would
+// measure the wrong target, and with them it can run code.
+const UNSAFE_ENV = ['GIT_DIR', 'GIT_WORK_TREE']
 const SHELLS = new Set(['sh', 'bash', 'zsh', 'dash'])
-const WIDE_TARGETS = new Set(['/', '/*', '~', '~/', '$HOME', '.', '..', '*'])
-const KUBECTL_MUTATING = new Set([
-  'apply', 'delete', 'patch', 'scale', 'rollout', 'edit', 'replace', 'set',
-  'drain', 'cordon', 'uncordon', 'taint', 'label', 'annotate', 'create', 'run',
-  'expose', 'autoscale',
-])
-const KUBECTL_VALUE_FLAGS = new Set([
-  '-n', '--namespace', '-s', '--server', '--cluster', '--user', '--request-timeout',
-  '-o', '--output', '-c', '--container',
-])
 
 export function classify(command: string): Risk | null {
-  let best: Risk | null = null
-
   for (const tokens of splitSegments(command)) {
     const risk = classifyTokens(tokens)
-    if (risk === null) continue
-    if (best === null || LEVEL_RANK[risk.level] > LEVEL_RANK[best.level]) best = risk
+    if (risk !== null) return risk
   }
 
-  return best
+  return null
 }
 
 function splitSegments(command: string): string[][] {
@@ -237,8 +208,7 @@ function classifyTokens(raw: string[]): Risk | null {
   const risk = classifyUnwrapped(tokens)
   if (risk === null) return null
 
-  const isRedirectable = risk.kind === 'docker' || risk.kind.startsWith('git-')
-  const redirected = isRedirectable ? UNSAFE_ENV.filter(name => name in env || unapplied.includes(name)) : []
+  const redirected = risk.kind.startsWith('git-') ? UNSAFE_ENV.filter(name => name in env || unapplied.includes(name)) : []
 
   return {
     ...risk,
@@ -261,21 +231,16 @@ function classifyUnwrapped(tokens: string[]): Risk | null {
   if (name === 'eval') return tokens.length > 1 ? classify(tokens.slice(1).join(' ')) : null
   if (name === 'rm') return classifyRm(tokens)
   if (name === 'git') return classifyGit(tokens)
-  if (name === 'docker' || name === 'docker-compose') return classifyDocker(tokens, name)
-  if (name === 'terraform' || name === 'tofu') return classifyTerraform(tokens)
-  if (name === 'kubectl' || name === 'oc') return classifyKubectl(tokens)
 
   return classifyMigration(tokens)
 }
 
-function make(kind: RiskKind, sub: string, level: BlastLevel, argv: string[], extra: Partial<Risk> = {}): Risk {
+function make(kind: RiskKind, sub: string, argv: string[], extra: Partial<Risk> = {}): Risk {
   return {
     kind,
     sub,
-    level,
     argv,
     targets: [],
-    bin: basename(argv[0] ?? ''),
     prefix: [],
     options: [],
     env: {},
@@ -319,9 +284,8 @@ function classifyRm(tokens: string[]): Risk | null {
   const { flags, targets } = splitArgs(tokens.slice(1))
   const isRecursive = flags.includes('--recursive') || /[rR]/.test(shortLetters(flags))
   if (!isRecursive || targets.length === 0) return null
-  const level = targets.some(target => WIDE_TARGETS.has(target)) ? 'high' : 'medium'
 
-  return make('rm', 'rm', level, tokens, { targets })
+  return make('rm', 'rm', tokens, { targets })
 }
 
 const GIT_CLEAN_VALUE_FLAGS = new Set(['-e', '--exclude'])
@@ -357,7 +321,7 @@ function classifyGit(tokens: string[]): Risk | null {
     const { flags, targets } = splitArgs(rest)
     if (!flags.includes('--hard')) return null
 
-    return make('git-reset', sub, 'high', tokens, { prefix, targets, unsafe })
+    return make('git-reset', sub, tokens, { prefix, targets, unsafe })
   }
   if (sub === 'clean') {
     const { flags, targets, taken } = splitArgs(rest, GIT_CLEAN_VALUE_FLAGS)
@@ -367,7 +331,7 @@ function classifyGit(tokens: string[]): Risk | null {
     if (isDry || !isForced) return null
     const options = [...taken, ...flags.filter(flag => flag.startsWith('--exclude='))]
 
-    return make('git-clean', sub, 'medium', tokens, { prefix, targets, options, unsafe, flags: letters })
+    return make('git-clean', sub, tokens, { prefix, targets, options, unsafe, flags: letters })
   }
   if (sub === 'push') {
     const { flags, targets } = splitArgs(rest, GIT_PUSH_VALUE_FLAGS)
@@ -378,103 +342,10 @@ function classifyGit(tokens: string[]): Risk | null {
       targets.slice(1).some(target => target.startsWith('+'))
     if (!isForce) return null
 
-    return make('git-push', sub, 'high', tokens, { prefix, targets, unsafe })
+    return make('git-push', sub, tokens, { prefix, targets, unsafe })
   }
 
   return null
-}
-
-function classifyDocker(tokens: string[], name: string): Risk | null {
-  let i = 1
-  const options: string[] = []
-  const unsafe: string[] = []
-  while (name === 'docker' && tokens[i]?.startsWith('-')) {
-    const token = tokens[i] as string
-    const value = tokens[i + 1]
-    if (DOCKER_VALUE_GLOBALS.has(token) && value !== undefined) {
-      if (DOCKER_FORWARDED_GLOBALS.has(token)) options.push(token, value)
-      else if (DOCKER_UNSAFE_GLOBALS.has(token)) unsafe.push(token)
-      i += 2
-    } else {
-      if (/^--context=/.test(token)) options.push(token)
-      else if (/^--(host|config)=/.test(token)) unsafe.push(token.split('=')[0] as string)
-      i += 1
-    }
-  }
-  const rest = tokens.slice(i)
-  const prefix: string[] = []
-
-  if (name === 'docker' && rest[0] === 'system' && rest[1] === 'prune') {
-    return make('docker', 'system-prune', 'high', tokens, { options, unsafe })
-  }
-  if (name === 'docker' && rest[0] === 'volume') {
-    const verb = rest[1]
-    if (verb === 'prune') return make('docker', 'volume-prune', 'high', tokens, { options, unsafe })
-    if (verb === 'rm' || verb === 'remove') {
-      const { targets } = splitArgs(rest.slice(2))
-
-      return make('docker', 'volume-rm', 'high', tokens, { targets, options, unsafe })
-    }
-
-    return null
-  }
-
-  const compose = name === 'docker-compose' ? rest : rest[0] === 'compose' ? rest.slice(1) : null
-  if (compose === null) return null
-  for (let j = 0; j < compose.length; j += 1) {
-    if ((compose[j] === '-f' || compose[j] === '-p') && compose[j + 1] !== undefined) {
-      prefix.push(compose[j] as string, compose[j + 1] as string)
-    }
-  }
-  const down = compose.indexOf('down')
-  if (down < 0) return null
-  const { flags } = splitArgs(compose.slice(down + 1))
-  const isVolumes = flags.includes('--volumes') || shortLetters(flags).includes('v')
-  if (!isVolumes) return null
-
-  return make('docker', 'compose-down', 'high', tokens, { prefix, options, unsafe })
-}
-
-function classifyTerraform(tokens: string[]): Risk | null {
-  const sub = tokens.slice(1).find(token => !token.startsWith('-'))
-  if (sub === 'destroy') return make('terraform', 'destroy', 'critical', tokens)
-  if (sub === 'apply') {
-    const level = tokens.includes('-destroy') ? 'critical' : 'high'
-
-    return make('terraform', 'apply', level, tokens)
-  }
-
-  return null
-}
-
-function classifyKubectl(tokens: string[]): Risk | null {
-  const prefix: string[] = []
-  let verb: string | undefined
-  let after: string | undefined
-  for (let i = 1; i < tokens.length; i += 1) {
-    const token = tokens[i] as string
-    if (KUBECTL_FORWARDED_FLAGS.has(token) && tokens[i + 1] !== undefined) {
-      prefix.push(token, tokens[i + 1] as string)
-      i += 1
-      continue
-    }
-    if (/^--(context|kubeconfig)=/.test(token)) {
-      prefix.push(token)
-      continue
-    }
-    if (KUBECTL_VALUE_FLAGS.has(token)) {
-      i += 1
-      continue
-    }
-    if (token.startsWith('-')) continue
-    if (verb === undefined) verb = token
-    else if (after === undefined) after = token
-  }
-  if (verb === undefined || !KUBECTL_MUTATING.has(verb)) return null
-  if (verb === 'rollout' && (after === 'status' || after === 'history')) return null
-  const level = verb === 'delete' ? 'high' : 'medium'
-
-  return make('kubectl', verb, level, tokens, { prefix })
 }
 
 type Migration = {
@@ -582,7 +453,7 @@ const MIGRATIONS: Migration[] = [
 function classifyMigration(tokens: string[]): Risk | null {
   const found = MIGRATIONS.find(migration => migration.match(tokens))
 
-  return found === undefined ? null : make('migration', found.tool, 'high', tokens)
+  return found === undefined ? null : make('migration', found.tool, tokens)
 }
 
 export function migrationStatus(tokens: string[], tool: string): string[] | null {
