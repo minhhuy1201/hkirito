@@ -16,6 +16,7 @@ A Markdown file at `<scratchpad>/review-log.md` (the session scratchpad; outside
 - `## Findings` - one line per finding: `[R<n>-#<id>] <severity> <axis> file:line - issue → <status>`. `<axis>` is `standards` or `spec`.
 
 Severities: `must-fix`, `should-fix`, `nit`, `question` (the reviewer needs the author's clarification).
+A `must-fix` needs evidence - the failing output of a command the reviewer ran, or the quoted standard or spec line the diff breaks; without it the finding is at most `should-fix`.
 
 Axes: every finding sits on one of two axes. **Standards** asks whether the change follows the repo's documented coding standards and the smell baseline in `code-smells.md` (next to this file). **Spec** asks whether the change does what the log's `## Spec` asked. A change can pass one axis and fail the other, so report them apart and never merge or rerank across axes.
 
@@ -86,6 +87,7 @@ Related files to read if needed: <paths>
 Verify every FIXED and ANSWERED item, and rule ACCEPTED or UPHELD on every DISPUTED item.
 Re-raise a WONTFIX item only with a reason the log does not already answer.
 Run the project's tests, lint, and typecheck; attach the failing output to any finding it backs.
+A must-fix needs evidence: failing output you ran, or the quoted standard or spec line it breaks. Without it, report should-fix at most.
 
 ## Two axes
 Review along two separate axes and tag every finding with its `axis`.

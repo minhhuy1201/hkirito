@@ -7,6 +7,8 @@ Reproduce first, fix the root cause, lock it with a test.
 3. **Regression test.** `diagnosing-bugs` ends with a regression test at the right seam. If it did not, run `tdd` to add one that fails without the fix. If the seam is expensive, use the closest executable check and say why.
 4. **Finish.** Follow the Finish section of `SKILL.md`.
 
+For a slow or perf bug, write the decision before you measure: the result that would change what you do, and the noise floor. Stop when the run-to-run spread is larger than the effect - the measurement cannot answer the question yet.
+
 If the bug depends on the order of events (a double submit, a cancel mid-flight, a retry, a lease that expires, parts that change independently) and `diagnosing-bugs` finds no tight loop, suggest the user run `/statechart`. It is user-only and downloads TLC on its first run, so do not invoke it.
 
 If the real finding is that no seam exists to lock the bug down, tell the user and suggest the `refactor` route.

@@ -40,7 +40,10 @@ then keep working.
   before they reach disk.
 - **Model routing** - specs and plans: Opus 5.5; implementation: Sonnet 5.5, inline in the main
   session; both medium effort. On the wrong model for the phase, ask the user to switch before the
-  first line - the choice is theirs.
+  first line - the choice is theirs. The one exception is delegate mode, which only the user turns
+  on (`/kirito-mode --delegate`, or asking for `implementer` by name): the main session stays on
+  Opus and hands each ticket to the `implementer` subagent, pinned to Sonnet in
+  `agents/implementer.md`, so implementation needs no model switch.
 - **Specs and plans live in the repo** - write them into the project's docs folder (e.g.
   `docs/specs/`, `docs/plans/`) and ship them in the PR; the plan-mode file
   under `~/.claude/plans/` is scratch. The next reader of the PR sees only what the repo holds.
