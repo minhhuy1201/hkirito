@@ -113,6 +113,7 @@ sequenceDiagram
 skills/            kirito-mode, tidy, and the vendored and ported skills
 agents/            reviewer.md
 hooks/             commit and push gates + settings snippets (optional)
+mods/              Claude Code mods; `pixel-blast` holds risky Bash commands behind a pixel report
 templates/         PR template and Self-review workflow to copy into a project
 githooks/          pre-commit (optional)
 docs/              this repo's own spec and plan
