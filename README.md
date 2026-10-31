@@ -17,18 +17,35 @@ flowchart LR
     R -->|bug| B1[diagnosing-bugs + regression test] --> FIN
     R -->|refactor| X1["codebase-design [+ improve-codebase-architecture]"] --> X2[subtract, tdd] --> FIN
     R -->|understand| U1[how / why / explain / research]
-    R -->|pr| P0["[blast-radius]"] --> P1[review-loop] --> P2[pr-sketch] --> P3[gh pr create]
+    R -->|pr| PH{"earlier work in this session?"}
+    PH -->|yes| PW["write handoff to review log, /clear, Sonnet, resume from log"] --> P0
+    PH -->|no| P0["[blast-radius]"]
+    P0 --> PC["tests, lint, typecheck green"] --> P1["review-loop: max 3 rounds, last clean round on HEAD is the gate"]
+    P1 --> PR["[REVIEW.md proposals, you approve each]"] --> P2[pr-sketch] --> P3[gh pr create]
 
     FIN[["checks green, spec/plan agree, tidy, branch check, commit"]]
 ```
 
-`[how]` runs only when the area is unfamiliar. `[blast-radius]` runs only when the diff touches a public interface, schema, data format, or widely imported export. `[architect]` runs when tickets cross a module seam, and `interrogate` joins it only when the design is contested. `review-loop` reports findings on two axes, Standards and Spec. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+`[how]` runs only when the area is unfamiliar. `[blast-radius]` runs only when the diff touches a public interface, schema, data format, or widely imported export. `[architect]` runs when tickets cross a module seam, and `interrogate` joins it only when the design is contested. `review-loop` reports findings by class on two axes, Standards and Spec, and never dispatches a reviewer while tests, lint, or typecheck fail. `[+ improve-codebase-architecture]` is an optional survey for refactor candidates. Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. Review runs only on the `pr` route.
+
+### The `pr` route and `review-loop`
+
+- **Clean context.** When the session already did other work, the route writes a `## Handoff` into the branch's review log (under the git directory, so it survives `/clear` and never shows in `git status`), then asks you to `/clear`, switch to Sonnet 5.5, and run `/kirito-mode pr <log path>`.
+- **3 rounds, gate included.** Every round follows the `pr-review` checklist. A round that reviews the committed `HEAD` and finds no `must-fix` is the gate (and writes the marker when a `pr-review` skill exists); there is no separate full re-review. Round 3 without a pass stops for you. Commit before the round you expect to pass.
+- **Deterministic checks first.** Tests, lint, and typecheck must be green before every reviewer dispatch; red checks are fixed without a round. The reviewer gets their output and a diff stat, and re-runs a check only when a finding needs more evidence.
+- **Findings by class.** One finding per kind of defect, listing every location, so one fix pass clears it.
+- **`REVIEW.md`.** Before the gate round, the main session proposes each `must-fix` class as a `REVIEW.md` entry (repo root) or a lint rule; you approve each one. Implementers and reviewers read `REVIEW.md` up front.
+- **Models.** Opus 5.5 for specs, plans, and the `reviewer` (pinned, never overridden); Sonnet 5.5 for the main session during implementation and the `pr` route. The session asks you to switch with `/model`; it never switches for you.
 
 ### Skills you type yourself
 
 These never load unless typed (`disable-model-invocation`): `/wayfinder` (plan work too big for one session as a map of decision tickets), `/statechart`, `/create-formal-verification-skill`, `/maintain-formal-verification-skill` (draw a model as a chart; useful for bugs that depend on event order; `/statechart` downloads TLC and Java with mise, about 305 MB, on its first run), `/sharpen` (deepen a task prompt), `/correct` (stop repeated agent mistakes structurally), `/wait-what` (re-pitch the last answer in plain terms), `/to-questionnaire`, `/wizard` (a script that walks a human through manual steps), plus `/learn`, `/retro`, `/handoff`, `/unslop`.
 
-`/kirito-mode --delegate <task>` hands each feature ticket to a fresh `implementer` subagent (Sonnet) while the main session stays on the planning model.
+`/kirito-mode --delegate <task>` hands each feature ticket to a fresh `implementer` subagent while the main session runs Sonnet 5.5 (it asks you to switch before the first ticket, and back to Opus 5.5 before any later spec or plan). `to-tickets` tags each ticket `Model: haiku` (mechanical) or `Model: sonnet`; a Haiku ticket that fails its checks twice or draws a `must-fix` is re-dispatched once on Sonnet. The implementer is done only when tests, lint, and typecheck pass. In review, fixes of at most 2 files with no interface change are made inline, except a `must-fix` on an unescalated `haiku` ticket, which escalates to Sonnet in the batch; larger ones go to one implementer for the whole batch.
+
+### Token usage
+
+`node skills/review-loop/scripts/usage.mjs [session...]` (Node only, no install) reports one session per argument (a session `.jsonl` or directory; default: the latest session of the current project): main-session spend in total and from the first reviewer dispatch, every subagent (type, model, spend), sums per agent type and model, and cache rewrites after idle gaps longer than the cache TTL. Spend is in input-equivalent units from the published cache multipliers, not dollars.
 
 ## Install
 

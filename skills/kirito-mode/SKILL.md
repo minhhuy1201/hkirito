@@ -22,7 +22,7 @@ Then state in your own words the user's goal, the problem they are solving, and,
 | `bug` | Something is broken, throwing, failing, or slow | `diagnosing-bugs` (ends in a regression test) -> `tidy` -> commit |
 | `understand` | The user wants to know how or why, and nothing should change | `how` / `why` / `explain` / `research` |
 | `refactor` | Restructure with no behaviour change | `codebase-design` [+ `improve-codebase-architecture`] -> `tdd` -> `tidy` -> commit |
-| `pr` | The user asks to open or update a PR | [`blast-radius`] -> `review-loop` -> `pr-sketch` -> `gh pr create` |
+| `pr` | The user asks to open or update a PR | [handoff] -> [`blast-radius`] -> checks green -> `review-loop` -> `pr-sketch` -> `gh pr create` |
 
 Signals: how many files the change touches, whether an interface, schema, or public API changes, new behaviour versus wrong behaviour. A task too big and foggy for one session (greenfield project, whole subsystem) is `feature` run in slices: suggest the user run `/wayfinder` first to chart the decisions, then run each resolved slice through `feature`. `wayfinder` is user-only, so do not invoke it. If two routes fit equally, or the acceptance criteria are unclear, ask one question before routing. Do not write code while the task is unclear.
 
@@ -31,6 +31,8 @@ Signals: how many files the change touches, whether an interface, schema, or pub
 Read `routes/<route>.md` and follow it. `small` and `refactor` have their own files; `small` also covers the multi-file case.
 
 Where a route shows `[how]` or `[architect]`, run it only when the area is unfamiliar or the tickets cross a module seam. `[interrogate]` runs only when the design is contested. `[blast-radius]` runs only when the diff touches something other code depends on.
+
+`pr <log path>` (a review log path after `pr`) routes straight to `pr` and resumes from that log.
 
 `--delegate`, or the user asking for `implementer` by name, turns on delegate mode, which only the `feature` route uses (step 6). On any other route, say it does not apply and work inline.
 
@@ -43,6 +45,7 @@ Where a route shows `[how]` or `[architect]`, run it only when the area is unfam
 - **Carry the goal.** Open each subagent brief, the PR's What & Why, and the final report with the goal statement from step 1, when step 1 made one.
 - **Files, not tracker.** Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. They ship in the PR.
 - **Subagents sparingly.** Work inline. Use a subagent only for output that would flood the context, such as a codebase sweep or a full test log, or for `implementer` in delegate mode. `tidy` never uses one.
+- **Model switch points.** The main session cannot change its own model; it asks the user to run `/model`. Switch to Opus 5.5 before `grill-with-docs`, `to-spec`, `to-tickets`, or `architect` work, and to Sonnet 5.5 when delegate-mode implementation starts and at the `pr` handoff. Inline implementation already runs on Sonnet 5.5 and is unchanged. The `reviewer` stays pinned to Opus in its frontmatter and is always dispatched with no `model` override.
 - **Review only at the PR.** Do not run `review-loop` after each change. It belongs to the `pr` route.
 
 ## 4. Finish (routes that change code)

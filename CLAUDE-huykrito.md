@@ -38,12 +38,16 @@ then keep working.
 - **[guardrail] Plan mode for cross-file structural changes** - get a plan approved before changing
   structure or interfaces across more than one file; read-only exploration catches design mistakes
   before they reach disk.
-- **Model routing** - specs and plans: Opus 5.5; implementation: Sonnet 5.5, inline in the main
-  session; both medium effort. On the wrong model for the phase, ask the user to switch before the
-  first line - the choice is theirs. The one exception is delegate mode, which only the user turns
-  on (`/kirito-mode --delegate`, or asking for `implementer` by name): the main session stays on
-  Opus and hands each ticket to the `implementer` subagent, pinned to Sonnet in
-  `agents/implementer.md`, so implementation needs no model switch.
+- **Model routing** - specs and plans: Opus 5.5; implementation and the `pr` route (handoff, review
+  loop, relay, fixes): Sonnet 5.5 in the main session; both medium effort. On the wrong model for the
+  phase, ask the user to switch before the first line - the choice is theirs, the session only asks.
+  Delegate mode (only the user turns it on: `/kirito-mode --delegate`, or asking for `implementer` by
+  name) hands each ticket to a fresh `implementer` subagent while the main session runs Sonnet 5.5;
+  ask for Opus 5.5 again before any later spec or plan. `implementer` defaults to Sonnet in
+  `agents/implementer.md`; a ticket tagged `Model: haiku` runs on Haiku 5.5 and escalates to Sonnet
+  after two failed checks or a `must-fix`. `reviewer` stays Opus 5.5, medium effort, pinned - never a
+  `model` override. This repo copy is the reference; the author syncs it into `~/.claude/CLAUDE.md`
+  by hand.
 - **Specs and plans live in the repo** - write them into the project's docs folder (e.g.
   `docs/specs/`, `docs/plans/`) and ship them in the PR; the plan-mode file
   under `~/.claude/plans/` is scratch. The next reader of the PR sees only what the repo holds.
@@ -54,9 +58,11 @@ then keep working.
   agree.
 - **Review own changes with the `review-loop` skill only when the user asks to open or update a PR** -
   not after each implementation. For work written in this session it outranks `code-review`,
-  `superpowers:requesting-code-review`, `caveman:caveman-review`, and `cavecrew-reviewer`. A project's
-  `pr-review` runs only as review-loop's final round, inside a fresh `reviewer` agent, so review stays
-  independent of the author; a push blocked by a pr-review gate means: run that final round. `reviewer`
+  `superpowers:requesting-code-review`, `caveman:caveman-review`, and `cavecrew-reviewer`. The loop
+  runs at most 3 rounds, and a round that reviews the committed `HEAD` and finds no `must-fix` is the
+  `pr-review` gate (no separate full re-review). A project's `pr-review` runs inside a fresh `reviewer`
+  agent, so review stays independent of the author; a push blocked by a pr-review gate means: run a
+  review-loop round on the committed `HEAD`. `reviewer`
   runs on Opus 5.5, medium effort, pinned in `~/.claude/agents/reviewer.md` - dispatch it with no
   `model` override, since a per-call `model` beats the frontmatter.
 - **Relay Needs human review** - after every review (`reviewer` or any review skill), post its **Needs

@@ -43,10 +43,12 @@ Present the proposed breakdown as a numbered list. For each ticket, show:
 
 - **Title**: short descriptive name
 - **Blocked by**: which other tickets (if any) must complete first
+- **Model**: `haiku` or `sonnet`, with its one-line reason (see "Choose the model" below)
 - **What it delivers**: the end-to-end behaviour this ticket makes work
 
 Ask the user:
 
+- Is each ticket's Model right? The user can change any of them here.
 - Does the granularity feel right? (too coarse / too fine)
 - Are the blocking edges correct: does each ticket only depend on tickets that genuinely gate it?
 - Should any tickets be merged or split further?
@@ -59,6 +61,16 @@ Write the approved tickets as one file per ticket under `docs/plans/<feature-slu
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
+### Choose the model
+
+Every ticket gets a `**Model:**` line placed after `Blocked by`, naming the model that implements it in delegate mode. A ticket is `haiku` only when all three hold:
+
+- it touches at most 2 files;
+- it follows a pattern that already exists in the repo, and the ticket NAMES that pattern;
+- it adds no business logic, branching rule, or interface change.
+
+Anything else is `sonnet`. The reason is one line saying which condition decided it. The user's edit at step 4 overrides your choice.
+
 <ticket-template>
 
 # <NN>: <Ticket title>
@@ -66,6 +78,8 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
 
 **Blocked by:** the numbers/titles of the tickets that gate this one, or "None (can start immediately)".
+
+**Model:** haiku|sonnet - <one-line reason>
 
 **Status:** todo
 
