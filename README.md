@@ -28,6 +28,8 @@ flowchart LR
 
 These never load unless typed (`disable-model-invocation`): `/wayfinder` (plan work too big for one session as a map of decision tickets), `/statechart`, `/create-formal-verification-skill`, `/maintain-formal-verification-skill` (draw a model as a chart; useful for bugs that depend on event order; `/statechart` downloads TLC and Java with mise, about 305 MB, on its first run), `/sharpen` (deepen a task prompt), `/correct` (stop repeated agent mistakes structurally), `/wait-what` (re-pitch the last answer in plain terms), `/to-questionnaire`, `/wizard` (a script that walks a human through manual steps), plus `/learn`, `/retro`, `/handoff`, `/unslop`.
 
+`/kirito-mode --delegate <task>` hands each feature ticket to a fresh `implementer` subagent (Sonnet) while the main session stays on the planning model.
+
 ## Install
 
 ```bash
@@ -44,6 +46,7 @@ for d in skills/*/; do
   ln -sfn "$PWD/skills/$name" ~/.claude/skills/$name
 done
 ln -sfn "$PWD/agents/reviewer.md" ~/.claude/agents/reviewer.md
+ln -sfn "$PWD/agents/implementer.md" ~/.claude/agents/implementer.md
 ```
 
 Start a new session and run `/kirito-mode <what you want done>`.
@@ -111,7 +114,7 @@ sequenceDiagram
 
 ```
 skills/            kirito-mode, tidy, and the vendored and ported skills
-agents/            reviewer.md
+agents/            reviewer.md, implementer.md
 hooks/             commit and push gates + settings snippets (optional)
 templates/         PR template and Self-review workflow to copy into a project
 githooks/          pre-commit (optional)
