@@ -12,7 +12,7 @@ Bash is for reading, diffing, and running tests, lint, and typecheck only. Never
 
 Before the push, CI has not run yet: report any CI checklist item as `n/a (pre-push)` and never poll `gh pr checks`.
 
-Hand back findings ranked most severe first, each with a severity (`must-fix`, `should-fix`, `nit`, or `question` when you need the author's clarification), `file:line`, the problem, and the fix. When the prompt names a review skill, its severity tags and output template replace these. Report "no findings" when nothing survives verification.
+Hand back findings ranked most severe first, each with a severity (`must-fix`, `should-fix`, `nit`, or `question` when you need the author's clarification), the class of defect, every `file:line` where it occurs (one finding per class, after searching the scope for siblings), the problem, and the fix. When the prompt names a review skill, its severity tags and output template replace these. Report "no findings" when nothing survives verification.
 
 End with a **Needs human review** section: every hunk in the change that touches a zone where an agent's verdict falls short, even when you found no bug there. Zones:
 
