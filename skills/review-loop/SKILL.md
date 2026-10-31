@@ -133,8 +133,8 @@ Used for every round. Build it in this order - static instructions first, then t
 ```
 ## Instructions
 Verify every FIXED and ANSWERED item in the review log below, and rule ACCEPTED or UPHELD on every DISPUTED item.
-Read the pr-review skill at the path under "## This round" and walk its checklist over that round's scope, skipping its step 5 (the marker).
-If Gate candidate (under "## This round") is yes and you find zero must-fix with nothing NOT_FIXED or UPHELD, also return review_summary: that skill's ## Review Summary and ## Self-review block for HEAD <sha>, in English. Tick checklist groups you walked in this round or that the log shows earlier rounds walked.
+When `pr-review skill:` under "## This round" gives a path, read it and walk its checklist over that round's scope, skipping its step 5 (the marker); when it says `none`, use the two axes only and return review_summary null.
+If Gate candidate (under "## This round") is yes and you find zero must-fix with nothing NOT_FIXED or UPHELD, also return review_summary: that skill's ## Review Summary and ## Self-review block for the HEAD named under "## This round", in English. Tick checklist groups you walked in this round or that the log shows earlier rounds walked.
 Report one finding per class of defect. Before reporting a defect, search the whole scope for siblings of it and list every location in that one finding's `locations`. Do not repeat a finding already in the log, and that covers its class: a new location of a logged class goes in as that finding's id with its locations extended, never as a new finding.
 Re-raise a WONTFIX item (any location of its class) only with a reason the log does not already answer.
 Checks are green (see the Checks block at the end of this prompt). Do not re-run them unless a finding needs evidence the block lacks or the block predates the snapshot; attach that output to the finding it backs.
@@ -167,10 +167,11 @@ Write needs_human_review in Vietnamese; everything else in English.
 ## This round
 Round <n> of 3 - <full | incremental>.
 Gate candidate: <yes - snapshot equals the committed HEAD tree with a clean working tree | no>
+HEAD: <sha>
 Scope: git diff <from> <to>
 Diff stat: <git diff --stat <from> <to>>
 Related files to read if needed: <paths>
-pr-review skill: <path>
+pr-review skill: <path | none>
 
 ## Checks
 <per command: command, exit code, failing tail of output; `not run: <reason>` for a check that is missing or cannot run>
