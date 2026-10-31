@@ -88,7 +88,7 @@ Ten changes, all inside the harness:
 
 **Stop rule.** Stop and report at the first of: round 3 ends without a pass; a reviewer returns `UPHELD`.
 
-**Reviewer prompt.** Order stays fixed-first for caching: spec, review log, then this round. "This round" gains a `## Checks` block (each command, its exit code, and the failing tail of its output, captured by the main session before the snapshot) and the diff stat. The reviewer re-runs a check only when a finding needs evidence the block does not give, or the block predates the snapshot. The reviewer is told to batch reads and commands into as few tool calls as possible.
+**Reviewer prompt.** Order for caching: static instructions (instructions, two axes, output) first, then the fixed spec and review log, then this round, then a `## Checks` block (each command, its exit code, and the failing tail of its output, captured by the main session before the snapshot). "This round" carries the HEAD sha and the diff stat. The reviewer re-runs a check only when a finding needs evidence the block does not give, or the block predates the snapshot. The reviewer is told to batch reads and commands into as few tool calls as possible.
 
 **Findings by class.** The output schema's finding gains a `class` (short name of the defect kind) and replaces the single `file` / `line` with a `locations` list. The reviewer searches the reviewed scope for siblings before reporting. "Do not repeat a finding already in the log" extends to the class: a new location of a logged class is added to the existing finding, not raised as a new one. The `## Findings` log line format carries the class and all locations.
 
