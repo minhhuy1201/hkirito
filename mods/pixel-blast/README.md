@@ -61,6 +61,8 @@ The hold runs before Claude Code's own permission prompt, so the dry runs also r
 
 ## Limits
 
+When a command has several risky parts, only the first is measured; the report names the rest. After a `cd`, `pushd` or `popd` the dry run cannot know where the command will run, so the report says it could not measure. `xargs rm -rf` is held, but the targets come from stdin and are not measured.
+
 Dry runs use only the variables that pick a target (`DATABASE_URL`, `RAILS_ENV`, `DJANGO_SETTINGS_MODULE`, ...) and never `PATH` or `LD_*`. Options that point git at another repository (`--git-dir`, `GIT_DIR`) are not repeated, so those commands are held but not measured. `git -C <dir>` is repeated only for a directory inside the working directory. Dry runs of migrations run the project's own status command, so measuring inside a repo you do not trust is not safe.
 
 This is a safety net, not a permission system. It reads the command text, so `$(...)`, aliases and scripts that call `rm` get past it. Globs are not expanded, so `rm -rf build/*` is held but not measured. A hot reload of the mod during a hold refuses the held command. Use permission rules for a hard block.

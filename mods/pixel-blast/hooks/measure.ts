@@ -30,7 +30,7 @@ export async function measure(run: Run, risk: Risk, command: string): Promise<Bl
   const exec: Run = argv => run(argv, env)
   const measured = await measureRisk(exec, risk)
   const { items, total = items.length, totalBytes, noun } = measured
-  const notes = [...(measured.notes ?? []), ...envNote(risk)]
+  const notes = [...risk.notes, ...(measured.notes ?? []), ...envNote(risk)]
   const sorted = items.some(item => item.bytes !== undefined)
     ? [...items].sort((a, b) => (b.bytes ?? 0) - (a.bytes ?? 0))
     : items
@@ -41,7 +41,7 @@ export async function measure(run: Run, risk: Risk, command: string): Promise<Bl
     items: sorted.slice(0, MAX_ITEMS),
     total,
     ...(totalBytes === undefined ? {} : { totalBytes }),
-    notes: notes.slice(0, 4),
+    notes: notes.slice(0, 5),
   }
 }
 

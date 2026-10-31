@@ -4,9 +4,9 @@ Status: approved
 
 ## Problem Statement
 
-When Claude runs a destructive shell command (`rm -rf`, `git reset --hard`, `git clean`, a force push, a database migration), the only checkpoint is the permission prompt. That prompt shows the command text, not what the command would actually destroy. Under time pressure the user approves a command without knowing that it deletes nine files, discards two uncommitted edits, or wipes a production namespace.
+When Claude runs a destructive shell command (`rm -rf`, `git reset --hard`, `git clean`, a force push, a database migration), the only checkpoint is the permission prompt. That prompt shows the command text, not what the command would actually destroy. Under time pressure the user approves a command without knowing that it deletes nine files, or discards two uncommitted edits.
 
-The "Blast Radius" mod from the Claude Code mods guide solves this, but it is a generic demo: a plain yellow-bordered box that does not fit the user's taste. The user wants their own version, kept in the hkirito repo, with a compact pixel look in the terminal, and covering Docker and infra commands they run day to day.
+The "Blast Radius" mod from the Claude Code mods guide solves this, but it is a generic demo: a plain yellow-bordered box that does not fit the user's taste. The user wants their own version, kept in the hkirito repo, with a compact pixel look in the terminal.
 
 ## Solution
 
@@ -71,7 +71,7 @@ Install, for anyone who clones the repo: `claude --plugin-dir <repo>/mods/pixel-
 - **One seam:** the `claude plugin test` harness, driving the mod from outside the way a session does. Tests raise `$.tool.call({ tool: 'Bash', command })`, stub `process.run` and `ui.open` with test hooks beneath the mod, mount the `Pane` / `AbovePrompt` on a surface, press `1` / `2` by key, and assert on what the call resolved to (ran, or denied with a reason) and on visible text.
 - A good test checks external behaviour only: which commands are held, what the report shows, what Claude receives. It does not call the classifier or measurer directly.
 - Covered: a safe command passes untouched; each risk kind is held; proceed runs it; cancel denies it with the summary; a failing dry run still holds with "could not measure"; `isPlaced: false` draws in the band; a narrow pane drops the size bars; the desktop surface draws plain text.
-- Plus `claude plugin validate` and `tsc -p` on the mod folder.
+- Plus `claude plugin validate` on the mod folder, and `tsc -p` where TypeScript is installed (it was not available when this was built).
 - Prior art: the bundled plugin-authoring example `pane.test.tsx`. No mod tests exist in this repo yet.
 
 ## Out of Scope

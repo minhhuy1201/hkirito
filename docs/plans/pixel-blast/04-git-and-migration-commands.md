@@ -11,6 +11,6 @@ Spec: [docs/specs/pixel-blast.md](../../specs/pixel-blast.md)
 - [x] Each git kind is held
 - [x] `git clean -n` mirrors the command's `-d` / `-x` flags
 - [x] Force push report notes that no fetch was run
-- [x] Migration commands for common tools are held; an unknown tool's pending list reads "could not measure"
+- [x] Migration commands for common tools are held; a tool without a read-only listing reads "no read-only listing for <tool>"
 - [x] `git push` without force and `git status` pass untouched
 - [x] Tests cover each kind with stubbed dry runs

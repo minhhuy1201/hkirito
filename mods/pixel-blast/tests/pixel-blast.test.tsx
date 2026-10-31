@@ -347,3 +347,31 @@ test('commands that redirect or hide their target are held but not measured', as
   expect(all).not.toMatch(/git (-C|status|clean)/)
   await ui.unmount()
 })
+
+test('a risky command behind xargs is held, and extra context is reported', async ($, on) => {
+  const seen: string[] = []
+  stubEngine(on, argv => {
+    seen.push(argv.join(' '))
+
+    return { exitCode: 0, stdout: argv[0] === 'find' ? FIND_OUT : '' }
+  })
+  await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as any)
+  const ui = await $.ui.mount(pane('terminal'))
+
+  let call = $.tool.call({ tool: 'Bash', command: 'ls | xargs -n 1 rm -rf' } as any)
+  expect(await until(() => ui.find({ type: 'Text', text: /come from stdin/ }))).toBeDefined()
+  await ui.press({ key: 'cancel' })
+  expect((await call as any).deny).toMatch(/pixel-blast held/)
+
+  call = $.tool.call({ tool: 'Bash', command: 'rm -rf build && git reset --hard' } as any)
+  expect(await until(() => ui.find({ type: 'Text', text: /also held, not measured: git reset --hard/ }))).toBeDefined()
+  await ui.press({ key: 'cancel' })
+  await call
+
+  call = $.tool.call({ tool: 'Bash', command: 'cd ../other && git reset --hard' } as any)
+  expect(await until(() => ui.find({ type: 'Text', text: /an earlier cd is not repeated/ }))).toBeDefined()
+  await ui.press({ key: 'cancel' })
+  await call
+  expect(seen.some(line => line.startsWith('git status'))).toBe(false)
+  await ui.unmount()
+})

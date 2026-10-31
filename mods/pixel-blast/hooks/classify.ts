@@ -16,6 +16,7 @@ export type Risk = {
   unappliedEnv: string[]
   // Options a dry run must not repeat (git --git-dir): they point at files that can load code.
   unsafe: string[]
+  notes: string[]
   flags: string
 }
 
@@ -31,7 +32,9 @@ const WRAPPER_VALUE_FLAGS = new Map<string, ReadonlySet<string>>([
   ['command', new Set()],
   ['time', new Set()],
   ['nohup', new Set()],
+  ['xargs', new Set(['-I', '-n', '-P', '-d', '-L', '-l', '-s', '-E', '-a'])],
 ])
+const DIRECTORY_COMMANDS = new Set(['cd', 'pushd', 'popd'])
 const RESERVED_WORDS = new Set(['then', 'do', 'else', 'elif', 'if', 'while', 'until', '{', '!'])
 const NO_FLAG_VALUES: ReadonlySet<string> = new Set()
 const GIT_VALUE_GLOBALS = new Set(['--namespace', '--config-env'])
@@ -42,12 +45,22 @@ const UNSAFE_ENV = ['GIT_DIR', 'GIT_WORK_TREE']
 const SHELLS = new Set(['sh', 'bash', 'zsh', 'dash'])
 
 export function classify(command: string): Risk | null {
+  const found: Risk[] = []
+  let hasChangedDirectory = false
   for (const tokens of splitSegments(command)) {
+    if (DIRECTORY_COMMANDS.has(basename(unwrap(tokens).tokens[0] ?? ''))) {
+      hasChangedDirectory = true
+      continue
+    }
     const risk = classifyTokens(tokens)
-    if (risk !== null) return risk
+    if (risk === null) continue
+    found.push(hasChangedDirectory ? { ...risk, unsafe: [...risk.unsafe, 'an earlier cd'] } : risk)
   }
+  const [first, ...others] = found
+  if (first === undefined || others.length === 0) return first ?? null
+  const names = others.map(risk => risk.argv.slice(0, 3).join(' '))
 
-  return null
+  return { ...first, notes: [...first.notes, `also held, not measured: ${names.join('; ')}`] }
 }
 
 function splitSegments(command: string): string[][] {
@@ -126,14 +139,14 @@ function basename(path: string): string {
   return path.split('/').pop() ?? path
 }
 
-type Unwrapped = { tokens: string[]; env: Record<string, string>; unapplied: string[] }
+type Unwrapped = { tokens: string[]; env: Record<string, string>; unapplied: string[]; viaXargs: boolean }
 
 // A path that stays inside the working directory; the only kind a dry run may use.
-export function isLocalPath(path: string): boolean {
+function isLocalPath(path: string): boolean {
   return !(path.startsWith('/') || path.startsWith('~') || path.split('/').includes('..'))
 }
 
-export function isLiteral(value: string): boolean {
+function isLiteral(value: string): boolean {
   return !(/[$`]/.test(value) || value.startsWith('~'))
 }
 
@@ -155,6 +168,7 @@ function envSplitString(rest: string[]): string[] | null {
 function unwrap(tokens: string[]): Unwrapped {
   const env: Record<string, string> = {}
   const unapplied: string[] = []
+  let viaXargs = false
   let rest = tokens
   for (;;) {
     const head = rest[0]
@@ -174,6 +188,7 @@ function unwrap(tokens: string[]): Unwrapped {
     const name = basename(head)
     const valueFlags = WRAPPER_VALUE_FLAGS.get(name)
     if (valueFlags === undefined) break
+    if (name === 'xargs') viaXargs = true
     rest = rest.slice(1)
     while (rest[0]?.startsWith('-')) {
       const split = name === 'env' ? envSplitString(rest) : null
@@ -186,7 +201,7 @@ function unwrap(tokens: string[]): Unwrapped {
     if (name === 'timeout') rest = rest.slice(1)
   }
 
-  return { tokens: rest, env, unapplied }
+  return { tokens: rest, env, unapplied, viaXargs }
 }
 
 function shellCommand(tokens: string[]): string | undefined {
@@ -204,8 +219,8 @@ function shellCommand(tokens: string[]): string | undefined {
 }
 
 function classifyTokens(raw: string[]): Risk | null {
-  const { tokens, env, unapplied } = unwrap(raw)
-  const risk = classifyUnwrapped(tokens)
+  const { tokens, env, unapplied, viaXargs } = unwrap(raw)
+  const risk = classifyUnwrapped(tokens, viaXargs)
   if (risk === null) return null
 
   const redirected = risk.kind.startsWith('git-') ? UNSAFE_ENV.filter(name => name in env || unapplied.includes(name)) : []
@@ -218,7 +233,7 @@ function classifyTokens(raw: string[]): Risk | null {
   }
 }
 
-function classifyUnwrapped(tokens: string[]): Risk | null {
+function classifyUnwrapped(tokens: string[], viaXargs: boolean): Risk | null {
   const head = tokens[0]
   if (head === undefined) return null
   const name = basename(head)
@@ -229,7 +244,7 @@ function classifyUnwrapped(tokens: string[]): Risk | null {
     return inner === undefined ? null : classify(inner)
   }
   if (name === 'eval') return tokens.length > 1 ? classify(tokens.slice(1).join(' ')) : null
-  if (name === 'rm') return classifyRm(tokens)
+  if (name === 'rm') return classifyRm(tokens, viaXargs)
   if (name === 'git') return classifyGit(tokens)
 
   return classifyMigration(tokens)
@@ -246,6 +261,7 @@ function make(kind: RiskKind, sub: string, argv: string[], extra: Partial<Risk> 
     env: {},
     unappliedEnv: [],
     unsafe: [],
+    notes: [],
     flags: '',
     ...extra,
   }
@@ -280,12 +296,13 @@ function shortLetters(flags: string[]): string {
     .join('')
 }
 
-function classifyRm(tokens: string[]): Risk | null {
+function classifyRm(tokens: string[], viaXargs: boolean): Risk | null {
   const { flags, targets } = splitArgs(tokens.slice(1))
   const isRecursive = flags.includes('--recursive') || /[rR]/.test(shortLetters(flags))
-  if (!isRecursive || targets.length === 0) return null
+  if (!isRecursive || (targets.length === 0 && !viaXargs)) return null
+  const notes = viaXargs ? ['more targets come from stdin and are not measured'] : []
 
-  return make('rm', 'rm', tokens, { targets })
+  return make('rm', 'rm', tokens, { targets, notes })
 }
 
 const GIT_CLEAN_VALUE_FLAGS = new Set(['-e', '--exclude'])

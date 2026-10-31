@@ -14,4 +14,5 @@ Spec: [docs/specs/pixel-blast.md](../../specs/pixel-blast.md)
 - [x] Dry runs use `$.process.run` with an argv array and a timeout; a failed dry run still holds and shows "could not measure"
 - [x] The wait loop uses `$.process.run` sleeps, not `$.clock.sleep`
 - [x] The `tool.call` hook carries a `.catch` that denies when it had not called `next`
-- [x] `claude plugin validate`, `tsc -p` and `claude plugin test` on the mod folder pass
+- [x] `claude plugin validate` and `claude plugin test` on the mod folder pass
+- [ ] `tsc -p` on the mod folder passes (not run: TypeScript is not installed here)
