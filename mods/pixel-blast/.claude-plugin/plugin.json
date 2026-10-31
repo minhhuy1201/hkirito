@@ -1,0 +1,6 @@
+{
+  "name": "pixel-blast",
+  "version": "0.1.0",
+  "description": "Holds risky Bash commands and shows a pixel-styled report of what they would touch.",
+  "types": "./types/index.d.ts"
+}
