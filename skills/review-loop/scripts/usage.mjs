@@ -82,6 +82,14 @@ function sumCalls(calls) {
   return s;
 }
 
+function startTime(s) {
+  return String(s.firstTs ?? "").slice(11, 19);
+}
+
+function perModelLines(calls) {
+  return [...groupByModel(calls)].map(([model, c]) => `  ${model}: ${statsLine(sumCalls(c))}`);
+}
+
 function groupByModel(calls) {
   const groups = new Map();
   for (const c of calls) {
@@ -123,7 +131,7 @@ function resolveSession(input) {
 }
 
 function latestSession() {
-  const slug = process.cwd().replace(/[/.]/g, "-");
+  const slug = process.cwd().replace(/[^a-zA-Z0-9]/g, "-");
   const projectDir = join(homedir(), ".claude", "projects", slug);
   if (!existsSync(projectDir)) return null;
   const files = readdirSync(projectDir)
@@ -156,14 +164,14 @@ function report({ main, dir }) {
   lines.push(`### session ${basename(main, ".jsonl")}`);
 
   lines.push("MAIN total");
-  for (const [model, calls] of groupByModel(mainT.calls)) lines.push(`  ${model}: ${statsLine(sumCalls(calls))}`);
+  lines.push(...perModelLines(mainT.calls));
 
   const firstReviewer = subs.find((s) => s.type === "reviewer");
   if (firstReviewer) {
     const since = firstReviewer.firstTs;
     lines.push(`MAIN from first reviewer (${since})`);
     const after = mainT.calls.filter((c) => c.ts && c.ts >= since);
-    for (const [model, calls] of groupByModel(after)) lines.push(`  ${model}: ${statsLine(sumCalls(calls))}`);
+    lines.push(...perModelLines(after));
   } else {
     lines.push("MAIN from first reviewer: no reviewer subagent");
   }
@@ -171,7 +179,7 @@ function report({ main, dir }) {
   lines.push("SUBAGENTS");
   for (const s of subs) {
     const stats = sumCalls(s.calls);
-    const time = String(s.firstTs ?? "").slice(11, 19);
+    const time = startTime(s);
     lines.push(`  ${time} ${s.type} ${s.model ?? "unknown"} ${statsLine(stats)} | ${s.firstPrompt.slice(0, 80)}`);
   }
 
@@ -187,7 +195,7 @@ function report({ main, dir }) {
   for (const [key, g] of sums) lines.push(`  ${key}: n=${g.n} ${statsLine(sumCalls(g.calls))}`);
 
   lines.push(`CACHE REWRITES (write > ${fmt(REWRITE_MIN_TOKENS)} after idle gap > TTL)`);
-  const sources = [["main", mainT.calls], ...subs.map((s) => [`${s.type} ${String(s.firstTs ?? "").slice(11, 19)}`, s.calls])];
+  const sources = [["main", mainT.calls], ...subs.map((s) => [`${s.type} ${startTime(s)}`, s.calls])];
   let any = false;
   for (const [label, calls] of sources) {
     for (const r of rewrites(calls)) {

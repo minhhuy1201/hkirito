@@ -8,7 +8,7 @@ Spec: [cheaper-review-loop](../../specs/cheaper-review-loop.md)
 
 **Status:** done
 
-- [x] `review-loop` has the post-gate proposal step with per-entry user approval
+- [x] `review-loop` has the proposal step before the round expected to pass, with per-entry user approval
 - [x] Entry format defined once, in `review-loop`
 - [x] Reviewer Standards axis lists `REVIEW.md` among documented standards
 - [x] `agents/implementer.md` reads `REVIEW.md` when present

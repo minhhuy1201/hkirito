@@ -31,7 +31,7 @@ flowchart LR
 ### The `pr` route and `review-loop`
 
 - **Clean context.** When the session already did other work, the route writes a `## Handoff` into the branch's review log (under the git directory, so it survives `/clear` and never shows in `git status`), then asks you to `/clear`, switch to Sonnet 5.5, and run `/kirito-mode pr <log path>`.
-- **3 rounds, gate included.** Every round follows the `pr-review` checklist. A round that reviews the committed `HEAD` and finds no `must-fix` is the gate and writes the marker; there is no separate full re-review. Round 3 without a pass stops for you. Commit before the round you expect to pass.
+- **3 rounds, gate included.** Every round follows the `pr-review` checklist. A round that reviews the committed `HEAD` and finds no `must-fix` is the gate (and writes the marker when a `pr-review` skill exists); there is no separate full re-review. Round 3 without a pass stops for you. Commit before the round you expect to pass.
 - **Deterministic checks first.** Tests, lint, and typecheck must be green before every reviewer dispatch; red checks are fixed without a round. The reviewer gets their output and a diff stat, and re-runs a check only when a finding needs more evidence.
 - **Findings by class.** One finding per kind of defect, listing every location, so one fix pass clears it.
 - **`REVIEW.md`.** Before the gate round, the main session proposes each `must-fix` class as a `REVIEW.md` entry (repo root) or a lint rule; you approve each one. Implementers and reviewers read `REVIEW.md` up front.

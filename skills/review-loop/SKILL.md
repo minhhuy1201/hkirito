@@ -38,7 +38,7 @@ The `## Handoff` section is written by the main session whenever the `pr` route 
 - spec path and plan path;
 - base (resolved as in "Base" below);
 - branch;
-- ticket list with status;
+- ticket list with status, each ticket's files, `Model:` value, and `Escalated:` state (the map from a finding's location to its ticket);
 - check commands: test, lint, typecheck (`not run: <reason>` for a missing one);
 - delegate mode: on or off;
 - last snapshot reviewed: the tree SHA of the latest `## Snapshots` line, or `none` before round 1.
@@ -49,8 +49,8 @@ The same step writes `## Spec` (the task spec and acceptance criteria, taken fro
 
 Read `delegate mode` from the log's `## Handoff` when resuming; only `on` changes how fixes are made. Between rounds, split the `OPEN` findings that need a code fix:
 
-- **Inline:** the main session fixes any finding whose fix touches at most 2 files and changes no interface (exports, signatures, schemas, wire formats), whatever its severity.
-- **Batch:** every remaining finding goes to ONE fresh `implementer` dispatch (new `Agent` call, never `SendMessage`) for the whole batch. The prompt lists each finding's id, class, and locations, plus the spec path, and tells it to read only the listed files and what they import, and to leave tests, lint, and typecheck green per "Pre-review checks" below. Dispatch it with `model: sonnet` when any finding in the batch sits on a ticket escalated under the `feature` route's escalation rule, and add the escalation note to the log; otherwise use the `Model:` rule of the `feature` route.
+- **Inline:** the main session fixes any finding whose fix touches at most 2 files and changes no interface (exports, signatures, schemas, wire formats), whatever its severity - except a `must-fix` on a `haiku` ticket not yet escalated, which always goes to the batch on Sonnet.
+- **Batch:** every remaining finding goes to ONE fresh `implementer` dispatch (new `Agent` call, never `SendMessage`) for the whole batch. The prompt lists each finding's id, class, and locations, plus the spec path, and tells it to read only the listed files and what they import, and to leave tests, lint, and typecheck green per "Pre-review checks" below. Dispatch it with `model: sonnet` when any finding sits on a ticket that is escalated, has `Model: sonnet` or no `Model:` line, or is a `haiku` ticket with a `must-fix` (escalate it per the `feature` route and add the escalation note to the log); a batch of only unescalated `haiku` tickets with no `must-fix` runs with `model: haiku`.
 
 Read the implementer's diff and run the pre-review checks yourself before the next snapshot. Answering, `WONTFIX`, and `DISPUTED` stay with the main session.
 

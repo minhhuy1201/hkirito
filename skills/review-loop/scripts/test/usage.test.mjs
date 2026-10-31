@@ -127,9 +127,9 @@ test("accepts several sessions at once", () => {
 
 test("no argument reads the latest session of the current project", () => {
   const home = join(root, "home");
-  const cwd = join(root, "work.dir");
+  const cwd = join(root, "my_work dir.v1");
   mkdirSync(cwd, { recursive: true });
-  const slug = cwd.replace(/[/.]/g, "-");
+  const slug = `${root.replace(/[^a-zA-Z0-9]/g, "-")}-my-work-dir-v1`;
   const projectDir = join(home, ".claude", "projects", slug);
   mkdirSync(projectDir, { recursive: true });
   const older = join(projectDir, "old-session.jsonl");

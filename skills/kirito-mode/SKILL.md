@@ -22,7 +22,7 @@ Then state in your own words the user's goal, the problem they are solving, and,
 | `bug` | Something is broken, throwing, failing, or slow | `diagnosing-bugs` (ends in a regression test) -> `tidy` -> commit |
 | `understand` | The user wants to know how or why, and nothing should change | `how` / `why` / `explain` / `research` |
 | `refactor` | Restructure with no behaviour change | `codebase-design` [+ `improve-codebase-architecture`] -> `tdd` -> `tidy` -> commit |
-| `pr` | The user asks to open or update a PR | [`blast-radius`] -> `review-loop` -> `pr-sketch` -> `gh pr create` |
+| `pr` | The user asks to open or update a PR | [handoff] -> [`blast-radius`] -> checks green -> `review-loop` -> `pr-sketch` -> `gh pr create` |
 
 Signals: how many files the change touches, whether an interface, schema, or public API changes, new behaviour versus wrong behaviour. A task too big and foggy for one session (greenfield project, whole subsystem) is `feature` run in slices: suggest the user run `/wayfinder` first to chart the decisions, then run each resolved slice through `feature`. `wayfinder` is user-only, so do not invoke it. If two routes fit equally, or the acceptance criteria are unclear, ask one question before routing. Do not write code while the task is unclear.
 
