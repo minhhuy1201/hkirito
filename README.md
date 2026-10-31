@@ -9,7 +9,7 @@ flowchart LR
     T(["/kirito-mode TASK"]) --> R{Route}
 
     R -->|feature| F0
-    F0 -->|no| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect + interrogate]"] --> F5[to-tickets] --> F6[tdd per ticket] --> FIN
+    F0 -->|no| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect + interrogate]"] --> F5[to-tickets] --> FB["/clear, Sonnet, feature plan dir"] --> F6[tdd per ticket] --> FIN
     F0{{feature too big for one session?}} -->|yes| W["/wayfinder, then one slice at a time"] -.-> F1
     R -->|small| S1{"1-2 files, no interface change?"}
     S1 -->|yes| S2[tdd or run the app] --> FIN
@@ -35,17 +35,17 @@ flowchart LR
 - **Deterministic checks first.** Tests, lint, and typecheck must be green before every reviewer dispatch; red checks are fixed without a round. The reviewer gets their output and a diff stat, and re-runs a check only when a finding needs more evidence.
 - **Findings by class.** One finding per kind of defect, listing every location, so one fix pass clears it.
 - **`REVIEW.md`.** Before the gate round, the main session proposes each `must-fix` class as a `REVIEW.md` entry (repo root) or a lint rule; you approve each one. Implementers and reviewers read `REVIEW.md` up front.
-- **Models.** Opus 5.5 for specs, plans, and the `reviewer` (pinned, never overridden); Sonnet 5.5 for the main session during implementation and the `pr` route. The session asks you to switch with `/model`; it never switches for you.
+- **Models.** Opus 5.5 for specs, plans, and the `reviewer` (pinned, never overridden); Sonnet 5.5 for the main session during implementation and the `pr` route. The prompt cache is per model, so a mid-context `/model` switch re-bills the whole context uncached: the session switches only at a cleared boundary (`/clear`, `/model`, resume command) and never switches for you.
 
 ### Skills you type yourself
 
 These never load unless typed (`disable-model-invocation`): `/wayfinder` (plan work too big for one session as a map of decision tickets), `/statechart`, `/create-formal-verification-skill`, `/maintain-formal-verification-skill` (draw a model as a chart; useful for bugs that depend on event order; `/statechart` downloads TLC and Java with mise, about 305 MB, on its first run), `/sharpen` (deepen a task prompt), `/correct` (stop repeated agent mistakes structurally), `/wait-what` (re-pitch the last answer in plain terms), `/to-questionnaire`, `/wizard` (a script that walks a human through manual steps), plus `/learn`, `/retro`, `/handoff`, `/unslop`.
 
-`/kirito-mode --delegate <task>` hands each feature ticket to a fresh `implementer` subagent while the main session runs Sonnet 5.5 (it asks you to switch before the first ticket, and back to Opus 5.5 before any later spec or plan). `to-tickets` tags each ticket `Model: haiku` (mechanical) or `Model: sonnet`; a Haiku ticket that fails its checks twice or draws a `must-fix` is re-dispatched once on Sonnet. The implementer is done only when tests, lint, and typecheck pass. In review, fixes of at most 2 files with no interface change are made inline, except a `must-fix` on an unescalated `haiku` ticket, which escalates to Sonnet in the batch; larger ones go to one implementer for the whole batch.
+`/kirito-mode --delegate <task>` hands each feature ticket to a fresh `implementer` subagent while the main session runs Sonnet 5.5 (the `feature` route stops once the breakdown is approved and asks you to `/clear`, switch to Sonnet 5.5, and run `/kirito-mode --delegate feature <plan dir>`; later spec or plan work starts a new Opus session). `to-tickets` tags each ticket `Model: haiku` (mechanical) or `Model: sonnet`; a Haiku ticket that fails its checks twice or draws a `must-fix` is re-dispatched once on Sonnet. The implementer is done only when tests, lint, and typecheck pass. In review, fixes of at most 2 files with no interface change are made inline, except a `must-fix` on an unescalated `haiku` ticket, which escalates to Sonnet in the batch; larger ones go to one implementer for the whole batch.
 
 ### Token usage
 
-`node skills/review-loop/scripts/usage.mjs [session...]` (Node only, no install) reports one session per argument (a session `.jsonl` or directory; default: the latest session of the current project): main-session spend in total and from the first reviewer dispatch, every subagent (type, model, spend), sums per agent type and model, and cache rewrites after idle gaps longer than the cache TTL. Spend is in input-equivalent units from the published cache multipliers, not dollars.
+`node skills/review-loop/scripts/usage.mjs [session...]` (Node only, no install) reports one session per argument (a session `.jsonl` or directory; default: the latest session of the current project): main-session spend in total and from the first reviewer dispatch, every subagent (type, model, spend), sums per agent type and model, a cache hit rate (`hit=`, read / (read + write + fresh)) on every line, cache rewrites after idle gaps longer than the cache TTL, and every model switch in the main session with the cache write of the switching call. Spend is in input-equivalent units from the published cache multipliers, not dollars.
 
 ## Install
 
