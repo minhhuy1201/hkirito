@@ -80,7 +80,9 @@ export const register: Register = on => {
     if (decision === 'proceed') return next(e)
     const why = decision === 'cancel' ? 'the user pressed Cancel' : 'the turn was interrupted'
 
-    return { deny: `pixel-blast held this command: ${why}. It would have touched ${summarize(report)}.` }
+    const caveats = report.notes.length === 0 ? '' : ` Notes: ${report.notes.join('; ')}.`
+
+    return { deny: `pixel-blast held this command: ${why}. It would have touched ${summarize(report)}.${caveats}` }
   }).catch(($, e, next) =>
     next.called ? next(e) : { deny: 'pixel-blast: the guard failed, so the command was blocked.' },
   )

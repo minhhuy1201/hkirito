@@ -32,9 +32,13 @@ const WRAPPER_VALUE_FLAGS = new Map<string, ReadonlySet<string>>([
   ['command', new Set()],
   ['time', new Set()],
   ['nohup', new Set()],
-  ['xargs', new Set(['-I', '-n', '-P', '-d', '-L', '-l', '-s', '-E', '-a'])],
+  ['xargs', new Set([
+    '-I', '-n', '-P', '-d', '-L', '-l', '-s', '-E', '-a',
+    '--max-args', '--max-procs', '--max-lines', '--max-chars', '--delimiter', '--arg-file',
+  ])],
 ])
 const DIRECTORY_COMMANDS = new Set(['cd', 'pushd', 'popd'])
+const CHDIR_FLAGS = new Set(['env -C', 'env --chdir', 'sudo -D', 'sudo --chdir'])
 const RESERVED_WORDS = new Set(['then', 'do', 'else', 'elif', 'if', 'while', 'until', '{', '!'])
 const NO_FLAG_VALUES: ReadonlySet<string> = new Set()
 const GIT_VALUE_GLOBALS = new Set(['--namespace', '--config-env'])
@@ -48,7 +52,8 @@ export function classify(command: string): Risk | null {
   const found: Risk[] = []
   let hasChangedDirectory = false
   for (const tokens of splitSegments(command)) {
-    if (DIRECTORY_COMMANDS.has(basename(unwrap(tokens).tokens[0] ?? ''))) {
+    const [head = '', first = ''] = unwrap(tokens).tokens
+    if (DIRECTORY_COMMANDS.has(basename(head)) || (basename(head) === 'eval' && DIRECTORY_COMMANDS.has(first))) {
       hasChangedDirectory = true
       continue
     }
@@ -139,7 +144,7 @@ function basename(path: string): string {
   return path.split('/').pop() ?? path
 }
 
-type Unwrapped = { tokens: string[]; env: Record<string, string>; unapplied: string[]; viaXargs: boolean }
+type Unwrapped = { tokens: string[]; env: Record<string, string>; unapplied: string[]; viaXargs: boolean; movesDirectory: boolean }
 
 // A path that stays inside the working directory; the only kind a dry run may use.
 function isLocalPath(path: string): boolean {
@@ -169,6 +174,7 @@ function unwrap(tokens: string[]): Unwrapped {
   const env: Record<string, string> = {}
   const unapplied: string[] = []
   let viaXargs = false
+  let movesDirectory = false
   let rest = tokens
   for (;;) {
     const head = rest[0]
@@ -191,6 +197,7 @@ function unwrap(tokens: string[]): Unwrapped {
     if (name === 'xargs') viaXargs = true
     rest = rest.slice(1)
     while (rest[0]?.startsWith('-')) {
+      if (CHDIR_FLAGS.has(`${name} ${rest[0]}`)) movesDirectory = true
       const split = name === 'env' ? envSplitString(rest) : null
       if (split !== null) {
         rest = split
@@ -201,7 +208,7 @@ function unwrap(tokens: string[]): Unwrapped {
     if (name === 'timeout') rest = rest.slice(1)
   }
 
-  return { tokens: rest, env, unapplied, viaXargs }
+  return { tokens: rest, env, unapplied, viaXargs, movesDirectory }
 }
 
 function shellCommand(tokens: string[]): string | undefined {
@@ -219,7 +226,7 @@ function shellCommand(tokens: string[]): string | undefined {
 }
 
 function classifyTokens(raw: string[]): Risk | null {
-  const { tokens, env, unapplied, viaXargs } = unwrap(raw)
+  const { tokens, env, unapplied, viaXargs, movesDirectory } = unwrap(raw)
   const risk = classifyUnwrapped(tokens, viaXargs)
   if (risk === null) return null
 
@@ -229,7 +236,7 @@ function classifyTokens(raw: string[]): Risk | null {
     ...risk,
     env: { ...env, ...risk.env },
     unappliedEnv: [...unapplied, ...risk.unappliedEnv],
-    unsafe: [...risk.unsafe, ...redirected],
+    unsafe: [...risk.unsafe, ...redirected, ...(movesDirectory ? ['a changed directory'] : [])],
   }
 }
 
@@ -297,9 +304,10 @@ function shortLetters(flags: string[]): string {
 }
 
 function classifyRm(tokens: string[], viaXargs: boolean): Risk | null {
-  const { flags, targets } = splitArgs(tokens.slice(1))
+  const { flags, targets: given } = splitArgs(tokens.slice(1))
+  const targets = viaXargs ? given.filter(target => !target.includes('{}')) : given
   const isRecursive = flags.includes('--recursive') || /[rR]/.test(shortLetters(flags))
-  if (!isRecursive || (targets.length === 0 && !viaXargs)) return null
+  if (!isRecursive || (given.length === 0 && !viaXargs)) return null
   const notes = viaXargs ? ['more targets come from stdin and are not measured'] : []
 
   return make('rm', 'rm', tokens, { targets, notes })

@@ -125,7 +125,9 @@ async function measureRm(run: Run, risk: Risk): Promise<Measured> {
       total += 1
     }
   }
-  if (files.length === 0 && notes.length === 0) notes.push('no files found under the targets')
+  if (files.length === 0 && notes.length === 0 && risk.notes.length === 0) {
+    notes.push('no files found under the targets')
+  }
 
   return { noun: total === 1 ? 'file' : 'files', items: files, total, totalBytes, notes }
 }

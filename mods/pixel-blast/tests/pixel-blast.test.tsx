@@ -145,6 +145,7 @@ test('each risky class is held and refused on cancel', async ($, on) => {
     'git --git-dir .git --work-tree . reset --hard',
     'git push origin +main',
     'git push --mirror',
+    'find . | xargs --max-args 1 rm -rf',
     'env -S "rm -rf build"',
   ]) {
     const call = $.tool.call({ tool: 'Bash', command } as any)
@@ -361,10 +362,20 @@ test('a risky command behind xargs is held, and extra context is reported', asyn
   let call = $.tool.call({ tool: 'Bash', command: 'ls | xargs -n 1 rm -rf' } as any)
   expect(await until(() => ui.find({ type: 'Text', text: /come from stdin/ }))).toBeDefined()
   await ui.press({ key: 'cancel' })
-  expect((await call as any).deny).toMatch(/pixel-blast held/)
+  expect((await call as any).deny).toMatch(/pixel-blast held.*come from stdin/)
 
   call = $.tool.call({ tool: 'Bash', command: 'rm -rf build && git reset --hard' } as any)
   expect(await until(() => ui.find({ type: 'Text', text: /also held, not measured: git reset --hard/ }))).toBeDefined()
+  await ui.press({ key: 'cancel' })
+  await call
+
+  call = $.tool.call({ tool: 'Bash', command: 'env -C ../other git reset --hard' } as any)
+  expect(await until(() => ui.find({ type: 'Text', text: /a changed directory is not repeated/ }))).toBeDefined()
+  await ui.press({ key: 'cancel' })
+  await call
+
+  call = $.tool.call({ tool: 'Bash', command: 'eval cd ../other && git reset --hard' } as any)
+  expect(await until(() => ui.find({ type: 'Text', text: /an earlier cd is not repeated/ }))).toBeDefined()
   await ui.press({ key: 'cancel' })
   await call
 
