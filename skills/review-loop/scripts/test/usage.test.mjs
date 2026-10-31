@@ -78,23 +78,23 @@ const full = buildSession("full", {
 
 test("main total uses the last usage per message id and a per-model eq", () => {
   const out = run([`${dir()}.jsonl`]);
-  assert.match(out, /MAIN total\n {2}claude-opus-5-5: calls=3 write=60\.0K read=110\.0K out=120 eq=110\.8K\n {2}claude-sonnet-5-5: calls=1 write=0 read=20\.0K out=5 eq=1\.0K/);
+  assert.match(out, /MAIN total\n {2}claude-opus-5-5: calls=3 write=60\.0K read=110\.0K hit=64\.6% out=120 eq=110\.8K\n {2}claude-sonnet-5-5: calls=1 write=0 read=20\.0K hit=100\.0% out=5 eq=1\.0K/);
 });
 
 test("main from first reviewer starts at the reviewer's first timestamp", () => {
   const out = run([dir()]);
-  assert.match(out, /MAIN from first reviewer \(2026-01-01T10:10:00Z\)\n {2}claude-opus-5-5: calls=1 write=40\.0K read=0 out=10 eq=80\.0K\n {2}claude-sonnet-5-5: calls=1/);
+  assert.match(out, /MAIN from first reviewer \(2026-01-01T10:10:00Z\)\n {2}claude-opus-5-5: calls=1 write=40\.0K read=0 hit=0\.0% out=10 eq=80\.0K\n {2}claude-sonnet-5-5: calls=1/);
 });
 
 test("subagent rows carry type, model, stats and the first prompt line", () => {
   const out = run([dir()]);
-  assert.match(out, /10:10:00 reviewer claude-opus-5-5 calls=3 write=53\.0K read=1\.0K out=51 eq=\d.*\| Review the diff$/m);
+  assert.match(out, /10:10:00 reviewer claude-opus-5-5 calls=3 write=53\.0K read=1\.0K hit=\d.*out=51 eq=\d.*\| Review the diff$/m);
   assert.match(out, /10:12:00 implementer claude-mystery-9 .*\| Implement ticket 01$/m);
 });
 
 test("multipliers: 5m 1.25x, 1h 2x, unknown model read 0.1x, no breakdown counts as 5m", () => {
   const out = run([dir()]);
-  assert.match(out, /implementer \/ claude-mystery-9: n=1 calls=3 write=79\.0K read=10\.0K out=110 eq=157\.0K/);
+  assert.match(out, /implementer \/ claude-mystery-9: n=1 calls=3 write=79\.0K read=10\.0K hit=\d.*out=110 eq=157\.0K/);
   assert.match(out, /reviewer \/ claude-opus-5-5: n=1 calls=3 .* eq=66\.3K/);
 });
 
@@ -106,6 +106,29 @@ test("rewrites: 5m write after idle gap and 1h write after 61 minutes, none insi
   assert.doesNotMatch(section, /10:42:05Z/);
   assert.doesNotMatch(section, /10:35:05Z/);
   assert.doesNotMatch(section, /10:20:00Z main/);
+});
+
+test("model switches list each change with the write of the switching call", () => {
+  const section = run([dir()]).split("MODEL SWITCHES (main)")[1];
+  assert.match(section, /2026-01-01T10:21:00Z claude-opus-5-5 -> claude-sonnet-5-5 write=0/);
+});
+
+test("a synthetic call between two same-model calls is not a switch", () => {
+  const synth = buildSession("synth", {
+    main: [
+      assistant("s1", "2026-01-03T10:00:00Z", OPUS, usage({ input: 1 })),
+      assistant("s2", "2026-01-03T10:01:00Z", "<synthetic>", usage({})),
+      assistant("s3", "2026-01-03T10:02:00Z", OPUS, usage({ input: 1 })),
+    ],
+    subagents: [],
+  });
+  const section = run([synth]).split("MODEL SWITCHES (main)")[1];
+  assert.match(section, /^\n {2}none\n?$/);
+});
+
+test("hit is - when a line has no input tokens", () => {
+  const empty = buildSession("empty", { main: [assistant("e1", "2026-01-04T10:00:00Z", OPUS, usage({ output: 5 }))], subagents: [] });
+  assert.match(run([empty]), /calls=1 write=0 read=0 hit=- out=5/);
 });
 
 test("prints no cross-model total and no dollar amounts", () => {

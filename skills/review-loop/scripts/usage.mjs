@@ -71,11 +71,12 @@ function loadTranscript(file) {
 }
 
 function sumCalls(calls) {
-  const s = { calls: 0, write: 0, read: 0, out: 0, eq: 0 };
+  const s = { calls: 0, write: 0, read: 0, fresh: 0, out: 0, eq: 0 };
   for (const c of calls) {
     s.calls += 1;
     s.write += c.w5 + c.w1;
     s.read += c.read;
+    s.fresh += c.fresh;
     s.out += c.out;
     s.eq += inputEquivalent(c);
   }
@@ -115,13 +116,29 @@ function rewrites(calls) {
   return found;
 }
 
+function modelSwitches(calls) {
+  const found = [];
+  let previous = null;
+  for (const c of calls) {
+    if (!c.model || c.model === "<synthetic>") continue;
+    if (previous !== null && c.model !== previous) found.push({ ts: c.ts, from: previous, to: c.model, write: c.w5 + c.w1 });
+    previous = c.model;
+  }
+  return found;
+}
+
 function fmt(n) {
   const v = Math.round(n);
   return v >= 1000 ? `${(v / 1000).toFixed(1)}K` : String(v);
 }
 
+function hitRate(s) {
+  const total = s.read + s.write + s.fresh;
+  return total === 0 ? "-" : `${((s.read / total) * 100).toFixed(1)}%`;
+}
+
 function statsLine(s) {
-  return `calls=${s.calls} write=${fmt(s.write)} read=${fmt(s.read)} out=${fmt(s.out)} eq=${fmt(s.eq)}`;
+  return `calls=${s.calls} write=${fmt(s.write)} read=${fmt(s.read)} hit=${hitRate(s)} out=${fmt(s.out)} eq=${fmt(s.eq)}`;
 }
 
 function resolveSession(input) {
@@ -204,6 +221,11 @@ function report({ main, dir }) {
     }
   }
   if (!any) lines.push("  none");
+
+  lines.push("MODEL SWITCHES (main)");
+  const switches = modelSwitches(mainT.calls);
+  for (const sw of switches) lines.push(`  ${sw.ts} ${sw.from} -> ${sw.to} write=${fmt(sw.write)}`);
+  if (!switches.length) lines.push("  none");
   return lines.join("\n");
 }
 

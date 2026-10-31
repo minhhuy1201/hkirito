@@ -34,7 +34,9 @@ Where a route shows `[how]` or `[architect]`, run it only when the area is unfam
 
 `pr <log path>` (a review log path after `pr`) routes straight to `pr` and resumes from that log.
 
-`--delegate`, or the user asking for `implementer` by name, turns on delegate mode, which only the `feature` route uses (step 6). On any other route, say it does not apply and work inline.
+`feature <plan dir>` (a plan directory after `feature`) routes straight to `feature` step 6: read the spec and the tickets in that directory instead of re-exploring, then implement.
+
+`--delegate` (also accepted before the resume entry: `--delegate feature <plan dir>`), or the user asking for `implementer` by name, turns on delegate mode, which only the `feature` route uses (step 6). On any other route, say it does not apply and work inline.
 
 ## 3. Rules for every route
 
@@ -45,7 +47,7 @@ Where a route shows `[how]` or `[architect]`, run it only when the area is unfam
 - **Carry the goal.** Open each subagent brief, the PR's What & Why, and the final report with the goal statement from step 1, when step 1 made one.
 - **Files, not tracker.** Specs go to `docs/specs/<feature>.md`, plans to `docs/plans/<feature>/NN-<slug>.md`. They ship in the PR.
 - **Subagents sparingly.** Work inline. Use a subagent only for output that would flood the context, such as a codebase sweep or a full test log, or for `implementer` in delegate mode. `tidy` never uses one.
-- **Model switch points.** The main session cannot change its own model; it asks the user to run `/model`. Switch to Opus 5.5 before `grill-with-docs`, `to-spec`, `to-tickets`, or `architect` work, and to Sonnet 5.5 when delegate-mode implementation starts and at the `pr` handoff. Inline implementation already runs on Sonnet 5.5 and is unchanged. The `reviewer` stays pinned to Opus in its frontmatter and is always dispatched with no `model` override.
+- **Model switch points.** The prompt cache is per model, so a `/model` switch mid-context re-bills the whole context uncached. The main session cannot change its own model anyway, so every switch happens only at a cleared phase boundary: write the handoff, STOP, and tell the user to run `/clear`, `/model <x>`, then a resume command. Opus 5.5 runs `grill-with-docs`, `to-spec`, `to-tickets`, and `architect` work, so start such a session on Opus (a session that begins on another model asks for the switch before its first line, while the context is still empty). Sonnet 5.5 runs implementation: the `feature` route stops at a boundary after the breakdown is approved (`feature <plan dir>`), and the `pr` route stops at the handoff (`pr <log path>`). Returning to Opus for later spec work means a new session. Inline implementation already runs on Sonnet 5.5 and is unchanged. The `reviewer` stays pinned to Opus in its frontmatter and is always dispatched with no `model` override.
 - **Review only at the PR.** Do not run `review-loop` after each change. It belongs to the `pr` route.
 
 ## 4. Finish (routes that change code)

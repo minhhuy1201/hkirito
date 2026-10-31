@@ -128,9 +128,36 @@ When the PR is already open, every push moves the PR head. After the gate passes
 
 ## Reviewer prompt
 
-Used for every round. Build it in this order - the fixed spec first keeps the prompt prefix stable across rounds:
+Used for every round. Build it in this order - static instructions first, then the fixed spec, then per-round data, so the prompt prefix stays stable across rounds (caching is a prefix match):
 
 ```
+## Instructions
+Verify every FIXED and ANSWERED item in the review log below, and rule ACCEPTED or UPHELD on every DISPUTED item.
+Read the pr-review skill at the path under "## This round" and walk its checklist over that round's scope, skipping its step 5 (the marker).
+If Gate candidate (under "## This round") is yes and you find zero must-fix with nothing NOT_FIXED or UPHELD, also return review_summary: that skill's ## Review Summary and ## Self-review block for HEAD <sha>, in English. Tick checklist groups you walked in this round or that the log shows earlier rounds walked.
+Report one finding per class of defect. Before reporting a defect, search the whole scope for siblings of it and list every location in that one finding's `locations`. Do not repeat a finding already in the log, and that covers its class: a new location of a logged class goes in as that finding's id with its locations extended, never as a new finding.
+Re-raise a WONTFIX item (any location of its class) only with a reason the log does not already answer.
+Checks are green (see the Checks block at the end of this prompt). Do not re-run them unless a finding needs evidence the block lacks or the block predates the snapshot; attach that output to the finding it backs.
+Batch reads and commands into as few tool calls as you can.
+A must-fix needs evidence: failing output you ran, or the quoted standard or spec line it breaks. Without it, report should-fix at most.
+
+## Two axes
+Review along two separate axes and tag every finding with its `axis`.
+
+**Standards.** Find every file that documents how code is written here (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `CODING_STANDARDS.md`, lint and format config, `REVIEW.md`, docs under `docs/`). Report (a) each place the diff breaks a documented standard, citing the standard's file and rule, and (b) each smell from `<path to code-smells.md>`, naming it and quoting the hunk. Read `<path to code-smells.md>` in full first. A documented standard overrides the baseline. Baseline hits are judgement calls. Skip anything tooling enforces.
+
+**Spec.** Compare the diff to the task spec below. Report (a) requirements that are missing or only partly done, (b) behaviour in the diff that the spec did not ask for (scope creep), and (c) requirements that look done but are wrong. Quote the spec line for each finding. With no spec section, skip this axis and say so.
+
+## Output
+JSON only:
+{
+  "verdicts": [{"id": "R<n>-#<id>", "verdict": "VERIFIED | NOT_FIXED | ACCEPTED | UPHELD", "reason": "..."}],
+  "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question", "axis": "standards | spec", "class": "<short name of the defect kind>", "locations": [{"file": "...", "line": 0}], "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
+  "review_summary": "<pr-review ## Review Summary and ## Self-review block, only when Gate candidate is yes and the round is clean; otherwise null>",
+  "needs_human_review": "<one Markdown block, in the layout agents/reviewer.md defines>"
+}
+Write needs_human_review in Vietnamese; everything else in English.
+
 ## Task spec & acceptance criteria
 <the log's ## Spec section, verbatim>
 
@@ -143,34 +170,10 @@ Gate candidate: <yes - snapshot equals the committed HEAD tree with a clean work
 Scope: git diff <from> <to>
 Diff stat: <git diff --stat <from> <to>>
 Related files to read if needed: <paths>
-Verify every FIXED and ANSWERED item, and rule ACCEPTED or UPHELD on every DISPUTED item.
-pr-review skill: <path>. Read it and walk its checklist over the scope above, skipping its step 5 (the marker).
-If Gate candidate is yes and you find zero must-fix with nothing NOT_FIXED or UPHELD, also return review_summary: that skill's ## Review Summary and ## Self-review block for HEAD <sha>, in English. Tick checklist groups you walked in this round or that the log shows earlier rounds walked.
-Report one finding per class of defect. Before reporting a defect, search the whole scope above for siblings of it and list every location in that one finding's `locations`. Do not repeat a finding already in the log, and that covers its class: a new location of a logged class goes in as that finding's id with its locations extended, never as a new finding.
-Re-raise a WONTFIX item (any location of its class) only with a reason the log does not already answer.
-Checks are green (see the Checks block below). Do not re-run them unless a finding needs evidence the block lacks or the block predates the snapshot; attach that output to the finding it backs.
-Batch reads and commands into as few tool calls as you can.
-A must-fix needs evidence: failing output you ran, or the quoted standard or spec line it breaks. Without it, report should-fix at most.
+pr-review skill: <path>
 
 ## Checks
 <per command: command, exit code, failing tail of output; `not run: <reason>` for a check that is missing or cannot run>
-
-## Two axes
-Review along two separate axes and tag every finding with its `axis`.
-
-**Standards.** Find every file that documents how code is written here (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `CODING_STANDARDS.md`, lint and format config, `REVIEW.md`, docs under `docs/`). Report (a) each place the diff breaks a documented standard, citing the standard's file and rule, and (b) each smell from `<path to code-smells.md>`, naming it and quoting the hunk. Read `<path to code-smells.md>` in full first. A documented standard overrides the baseline. Baseline hits are judgement calls. Skip anything tooling enforces.
-
-**Spec.** Compare the diff to the task spec above. Report (a) requirements that are missing or only partly done, (b) behaviour in the diff that the spec did not ask for (scope creep), and (c) requirements that look done but are wrong. Quote the spec line for each finding. With no spec section, skip this axis and say so.
-
-## Output
-JSON only:
-{
-  "verdicts": [{"id": "R<n>-#<id>", "verdict": "VERIFIED | NOT_FIXED | ACCEPTED | UPHELD", "reason": "..."}],
-  "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question", "axis": "standards | spec", "class": "<short name of the defect kind>", "locations": [{"file": "...", "line": 0}], "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
-  "review_summary": "<pr-review ## Review Summary and ## Self-review block, only when Gate candidate is yes and the round is clean; otherwise null>",
-  "needs_human_review": "<one Markdown block, in the layout agents/reviewer.md defines>"
-}
-Write needs_human_review in Vietnamese; everything else in English.
 ```
 
 `NOT_FIXED` reopens the item as `OPEN`. Fill `<path to code-smells.md>` with the absolute path of that file in this skill's folder. After each round, update the log, then relay the findings to the user under `## Standards` and `## Spec` headings, never merged or reranked across axes, and relay `needs_human_review` verbatim as its own block after the findings.

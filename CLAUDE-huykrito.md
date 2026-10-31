@@ -39,11 +39,14 @@ then keep working.
   structure or interfaces across more than one file; read-only exploration catches design mistakes
   before they reach disk.
 - **Model routing** - specs and plans: Opus 5.5; implementation and the `pr` route (handoff, review
-  loop, relay, fixes): Sonnet 5.5 in the main session; both medium effort. On the wrong model for the
-  phase, ask the user to switch before the first line - the choice is theirs, the session only asks.
-  Delegate mode (only the user turns it on: `/kirito-mode --delegate`, or asking for `implementer` by
-  name) hands each ticket to a fresh `implementer` subagent while the main session runs Sonnet 5.5;
-  ask for Opus 5.5 again before any later spec or plan. `implementer` defaults to Sonnet in
+  loop, relay, fixes): Sonnet 5.5 in the main session; both medium effort. The prompt cache is per model,
+  so a mid-context `/model` switch re-bills the whole context uncached: switch only at a cleared
+  boundary - write the handoff, stop, and ask the user to `/clear`, `/model <x>`, then resume. A
+  session that starts on the wrong model asks for the switch before its first line, while the context
+  is empty. The choice is theirs, the session only asks. Delegate mode (only the user turns it on:
+  `/kirito-mode --delegate`, or asking for `implementer` by name) hands each ticket to a fresh
+  `implementer` subagent while the main session runs Sonnet 5.5; later spec or plan work starts a
+  new Opus session. `implementer` defaults to Sonnet in
   `agents/implementer.md`; a ticket tagged `Model: haiku` runs on Haiku 5.5 and escalates to Sonnet
   after two failed checks or a `must-fix`. `reviewer` stays Opus 5.5, medium effort, pinned - never a
   `model` override. This repo copy is the reference; the author syncs it into `~/.claude/CLAUDE.md`
