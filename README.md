@@ -7,7 +7,7 @@ You type `/kirito-mode <task>`. It decides whether the task is a feature, a smal
 ```text
 you    > /kirito-mode the login button does nothing on Safari
 claude > Route: bug - something is broken on one browser
-         reproduce it -> failing test -> fix -> tidy -> commit
+         Goal: make the login button work on Safari; smallest change: fix the broken handler
 ```
 
 The router prints its choice first. If it guessed wrong, say so in your next message and it switches route.
@@ -21,7 +21,7 @@ The router prints its choice first. If it guessed wrong, say so in your next mes
 | **feature** | New behaviour that spans modules or needs decisions | interview -> spec -> tickets -> test-first per ticket -> commit |
 | **small** | A copy fix, config change, one function | test (or run the app and look) -> commit |
 | **bug** | Something broken, throwing, failing, or slow | reproduce -> regression test -> fix -> commit |
-| **understand** | "How does X work?", "Why is it like this?" | `how` / `why` / `explain` / `research`, no edits |
+| **understand** | "How does X work?", "Why is it like this?" | `how` / `why` / `explain` / `research`, no code edits |
 | **refactor** | Restructure without changing behaviour | design the module -> subtract -> tests stay green -> commit |
 | **pr** | Open or update a pull request | checks green -> review loop (max 3 rounds) -> PR sketch -> `gh pr create` |
 
@@ -32,7 +32,7 @@ flowchart LR
     R --> S[small] --> FIN
     R --> B[bug] --> FIN
     R --> X[refactor] --> FIN
-    R --> U[understand] --> ANS([answer, no edits])
+    R --> U[understand] --> ANS([answer, no code edits])
     R --> P[pr] --> PR([pull request])
     FIN[["checks green -> tidy -> branch check -> commit"]]
 ```
@@ -45,7 +45,7 @@ Every route that changes code ends the same way: tests, lint, and typecheck pass
 - **The design ships with the code.** Specs go to `docs/specs/<feature>.md` and plans to `docs/plans/<feature>/NN-<slug>.md`, so the PR carries its own design record. There is no issue tracker to set up.
 - **"Done" means checked.** Nothing is called done, fixed, or passing until the real test, lint, and typecheck commands have run.
 - **Review happens once, at the PR.** A fresh reviewer agent reads the diff, at most 3 rounds, and it never starts while a check is red.
-- **It keeps token cost down.** Opus 5.5 writes specs and plans and runs the reviewer, Sonnet 5.5 writes code. Models switch only after a `/clear`, so the prompt cache is never rebuilt mid-conversation.
+- **It keeps token cost down.** Opus 5.5 writes specs and plans and runs the reviewer, Sonnet 5.5 writes code. Models switch only after a `/clear`, so a model switch never re-bills the cache mid-conversation.
 - **It works where hooks are blocked.** Every flow runs with Claude hooks disabled. Hooks are optional extras.
 
 ## Quick start
