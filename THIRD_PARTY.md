@@ -27,6 +27,7 @@ Skills in this repo are copied from, or adapted from, the projects below. `mattp
 - Copyright (c) 2025 Cocoon AI
 - License: Apache-2.0, full text in `skills/flow-map/LICENSE`
 - Used in: `flow-map` (ported). The method only: its Type router and Mermaid input (`archify/SKILL.md`), `references/repository-authoring.md`, and the Composition and meaning and Dataflow lineage parts of `references/authoring-defaults.md`, condensed and rewritten for Mermaid output. No code, schema, example, viewer, or CLI was taken. The UI journey view is an hkirito addition.
+- Used in: `archify` (vendored). The `archify/` package copied at the same commit, with its own `LICENSE`, `NOTICE`, and `THIRD_PARTY_NOTICES.md`. Changes: the update check is always off (`scripts/check-update.mjs`, `bin/delivery-update.mjs`), remote brand capture returns unavailable (`renderers/shared/brand-marks.mjs`, `bin/archify.mjs`), `references/update-awareness.md` and the rendered demo HTML under `examples/` are removed, and `SKILL.md` is user-invoked only, with the update and proactive-mode instructions removed.
 
 ## MIT License text
 
