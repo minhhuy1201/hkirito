@@ -2203,7 +2203,8 @@ const COMMAND_USAGE = {
   'browser-check': '<output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]',
   'visual-check': '<output.html> [--json|--summary] [--require-provenance] [--out-dir <dir>]',
   guide: '[scenario or question] [--json] [--lang en|zh]',
-  brands: ['[name, alias, domain, or category] [--json]', 'capture <url> [--json]'],
+  // hkirito vendor: `brands capture` is disabled, so usage leaves it out.
+  brands: ['[name, alias, domain, or category] [--json]'],
   examples: '',
   doctor: '',
   demo: '[output-directory]',
