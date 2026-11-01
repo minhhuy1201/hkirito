@@ -17,7 +17,7 @@ Then state in your own words the user's goal, the problem they are solving, and,
 
 | Route | Pick it when | Flow (details in `routes/`) |
 |---|---|---|
-| `feature` | New behaviour or a design change that spans modules or needs decisions | [how] -> `grill-with-docs` -> `to-spec` -> [`architect` + `interrogate`] -> `to-tickets` -> `tdd` per ticket -> `tidy` -> commit |
+| `feature` | New behaviour or a design change that spans modules or needs decisions | [how] -> `grill-with-docs` -> `to-spec` + `flow-map` -> [`architect` + `interrogate`] -> `to-tickets` -> `tdd` per ticket -> `tidy` -> commit |
 | `small` | Short, contained change (UI tweak, copy, config, one function) | 1-2 files: `tdd` or a run-the-app check -> `tidy` -> commit. Several files or an interface change: `to-tickets` first |
 | `bug` | Something is broken, throwing, failing, or slow | `diagnosing-bugs` (ends in a regression test) -> `tidy` -> commit |
 | `understand` | The user wants to know how or why, and nothing should change | `how` / `why` / `explain` / `research` |

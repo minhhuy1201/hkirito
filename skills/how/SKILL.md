@@ -21,7 +21,7 @@ Use the sections that apply, drop the rest.
 
 - **Overview.** What it is, what it does, why it exists. 1-2 paragraphs.
 - **Key concepts.** The types, services, or abstractions needed to follow the rest. Brief.
-- **How it works.** The longest section. What triggers it, each step, where data goes, the decision points. Prose with `file:line` references, no large code blocks. Add a mermaid diagram only when several components talk to each other or data changes shape across stages.
+- **How it works.** The longest section. What triggers it, each step, where data goes, the decision points. Prose with `file:line` references, no large code blocks. Add a mermaid diagram only when several components talk to each other or data changes shape across stages; pick and compose it with `flow-map`.
 - **Where things live.** A short file map.
 - **Gotchas.** Surprising behaviour and pitfalls. Skip when there are none.
 

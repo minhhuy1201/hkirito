@@ -1,6 +1,6 @@
 # Third-party notices
 
-Skills in this repo are copied from, or adapted from, the projects below. Both are MIT licensed. Each copied `SKILL.md` carries a provenance comment naming its source and commit.
+Skills in this repo are copied from, or adapted from, the projects below. `mattpocock/skills` and `cursor/plugins` are MIT licensed; `tt-a1i/archify` is Apache-2.0. Each copied `SKILL.md` carries a provenance comment naming its source and commit.
 
 ## mattpocock/skills
 
@@ -19,6 +19,14 @@ Skills in this repo are copied from, or adapted from, the projects below. Both a
 - Added at commit `9580c23`: `sharpen`, `correct`, `statechart` (with its scripts and tests), `create-formal-verification-skill`, `maintain-formal-verification-skill` (all copied), `blast-radius` (ported to run inline, without the multi-model arena), `interrogate` (ported, then re-ported at `ab1f702`, see below), `show-me-your-work` (ported: no transcript audit, one fresh `reviewer` for the independent review)
 - Re-ported at commit `ab1f702`: `interrogate` (one fresh worktree adversary, findings proven by a run, references removed)
 - Ideas from `ab1f702`: restate the goal (`poteto-mode`) in `kirito-mode`, must-fix needs evidence (Autopilot playbooks) in `review-loop`, write the decision before measuring (`principle-explain-the-number`) in the `bug` route
+
+## tt-a1i/archify
+
+- Source: https://github.com/tt-a1i/archify, commit `a4065941`
+- Copyright (c) 2026 tt-a1i (Archify)
+- Copyright (c) 2025 Cocoon AI
+- License: Apache-2.0, full text in `skills/flow-map/LICENSE`
+- Used in: `flow-map` (ported). The method only: its Type router and Mermaid input (`archify/SKILL.md`), `references/repository-authoring.md`, and the Composition and meaning and Dataflow lineage parts of `references/authoring-defaults.md`, condensed and rewritten for Mermaid output. No code, schema, example, viewer, or CLI was taken. The UI journey view is an hkirito addition.
 
 ## MIT License text
 

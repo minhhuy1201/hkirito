@@ -15,6 +15,10 @@ A **sketch** is a tiny text visual in the PR body that shows the reviewer the sh
 
 Sketch only when the change has a shape a sentence can't carry: a new call path, moved files, a changed control flow, a new component in a tree, several actors talking, data passing through new stages, a schema change. A one-file fix, rename, dependency bump, config tweak, or copy change gets prose only - the sketch would just restate the diff.
 
+## Reuse the spec's flow
+
+When the PR ships a spec with a `## Flows` section, the sketch is a trimmed copy of the one flow that best shows what changed, so the PR and the spec show the same picture. Keep its `new` class, cut it to the budget below, and use it even though it is Mermaid. Draw a fresh sketch only when the flow no longer matches the code, and fix the spec too.
+
 ## Budget
 
 - One sketch per PR; two only when the PR has two independent parts.

@@ -18,10 +18,10 @@ The router prints its choice first. If it guessed wrong, say so in your next mes
 
 | Route | Use it for | What runs |
 |---|---|---|
-| **feature** | New behaviour that spans modules or needs decisions | interview -> spec -> tickets -> test-first per ticket -> commit |
+| **feature** | New behaviour that spans modules or needs decisions | interview -> spec with `flow-map` diagrams -> tickets -> test-first per ticket -> commit |
 | **small** | A copy fix, config change, one function | test (or run the app and look) -> commit |
 | **bug** | Something broken, throwing, failing, or slow | reproduce -> regression test -> fix -> commit |
-| **understand** | "How does X work?", "Why is it like this?" | `how` / `why` / `explain` / `research`, no code edits |
+| **understand** | "How does X work?", "Why is it like this?", "Show me the flow" | `how` / `why` / `explain` / `research` / `flow-map`, no code edits |
 | **refactor** | Restructure without changing behaviour | design the module -> subtract -> tests stay green -> commit |
 | **pr** | Open or update a pull request | checks green -> review loop (max 3 rounds) -> PR sketch -> `gh pr create` |
 
@@ -101,14 +101,14 @@ flowchart LR
     T(["/kirito-mode TASK"]) --> R{Route}
 
     R -->|feature| F0
-    F0 -->|no| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec] --> F4["[architect + interrogate]"] --> F5[to-tickets] --> FB["/clear, Sonnet, feature plan dir"] --> F6[tdd per ticket] --> FIN
+    F0 -->|no| F1["[how]"] --> F2[grill-with-docs] --> F3[to-spec + flow-map] --> F4["[architect + interrogate]"] --> F5[to-tickets] --> FB["/clear, Sonnet, feature plan dir"] --> F6[tdd per ticket] --> FIN
     F0{{feature too big for one session?}} -->|yes| W["/wayfinder, then one slice at a time"] -.-> F1
     R -->|small| S1{"1-2 files, no interface change?"}
     S1 -->|yes| S2[tdd or run the app] --> FIN
     S1 -->|no| S3[to-tickets] --> S2
     R -->|bug| B1[diagnosing-bugs + regression test] --> FIN
     R -->|refactor| X1["codebase-design [+ improve-codebase-architecture]"] --> X2[subtract, tdd] --> FIN
-    R -->|understand| U1[how / why / explain / research]
+    R -->|understand| U1[how / why / explain / research / flow-map]
     R -->|pr| PH{"earlier work in this session?"}
     PH -->|yes| PW["write handoff to review log, /clear, Sonnet, resume from log"] --> P0
     PH -->|no| P0["[blast-radius]"]
