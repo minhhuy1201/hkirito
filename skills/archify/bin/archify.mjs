@@ -6284,12 +6284,13 @@ async function commandBrands(args) {
       query,
       count: marks.length,
       marks,
-      fallback: 'Run "archify brands capture <url> --json", then use the returned digest-pinned brand value.',
+      // hkirito vendor: remote capture is disabled, so the fallback is to omit the brand.
+      fallback: 'No built-in brand matched; omit `brand` (remote capture is disabled in this vendored copy).',
     }, null, 2));
     return;
   }
   if (!marks.length) {
-    console.log(`No built-in brand matched "${query}". Run "archify brands capture <url> --json", then use the returned digest-pinned brand value.`);
+    console.log(`No built-in brand matched "${query}". Omit \`brand\` (remote capture is disabled in this vendored copy).`);
     return;
   }
   const grouped = Map.groupBy

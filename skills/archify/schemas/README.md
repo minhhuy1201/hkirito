@@ -119,7 +119,7 @@ local to the current page.
 Every semantic node collection (`components`, `nodes`, `participants`, and
 `states`) also accepts one optional `brand`: either a canonical string returned
 by `archify brands --json`, or a digest-pinned `{ "url", "sha256" }` object
-returned by `archify brands capture <url> --json`. Known IDs and known-brand
+returned by `archify brands capture <url> --json` (disabled in the hkirito vendored copy, which makes no network calls). Known IDs and known-brand
 domains use the bundled vector catalogue. Unknown URLs must be captured in that
 explicit command before authoring; render and validate never perform an
 unpinned network capture. Unsafe, unavailable, changed, or unsupported content
