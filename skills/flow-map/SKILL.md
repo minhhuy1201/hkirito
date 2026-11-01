@@ -68,7 +68,7 @@ For a spec, or any behaviour that is not built yet.
   ```
   ````
 
-- In the `feature` route, add a `## Flows` section to the spec after `## Solution`, with the views the feature needs among business workflow, data flow, and UI journey. Skip a view that would only restate the Solution.
+- For a spec, add a `## Flows` section to the spec after `## Solution`, with the views the feature needs among business workflow, data flow, and UI journey. Skip a view that would only restate the Solution.
 
 ## Output
 
@@ -83,6 +83,6 @@ For each diagram, in this order:
    |---|---|---|
    | `orderApi` | `src/api/orders.ts:42-58` | handles `POST /orders`, validates the body |
 
-5. **Unknowns**, when any: one line each, beside the claim they affect.
+5. **Unknowns**, when any: one line each, naming the node or edge it affects.
 
 Then one or two sentences with the takeaway, only when it is not already obvious from the picture. State a deliberately narrowed scope or an omitted part a reader would expect. Do not recap the steps you took.
