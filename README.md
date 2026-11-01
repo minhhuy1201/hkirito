@@ -161,6 +161,7 @@ These load only when you type them (`disable-model-invocation`):
 | Skill | What it does |
 |---|---|
 | `/wayfinder` | Plans work too big for one session as a map of decision tickets in repo files |
+| `/archify` | Draws a system, flow, schema, or timeline as an interactive standalone HTML page. Vendored from archify with its update check and remote logo capture turned off, so it makes no network calls. Specs and PR bodies keep using `flow-map` (Mermaid) |
 | `/statechart` | Draws a system's states as a chart, useful for bugs that depend on event order. Its first run downloads TLC and Java with mise (about 305 MB) |
 | `/create-formal-verification-skill`, `/maintain-formal-verification-skill` | Set up formal verification for a project and keep it in line with the code |
 | `/sharpen` | Makes a task deeper, not bigger, then rewrites the prompt |
@@ -287,4 +288,4 @@ THIRD_PARTY.md     upstream sources and licenses
 
 ## Credits
 
-Many skills are copied or adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins pstack](https://github.com/cursor/plugins/tree/main/pstack), both MIT licensed. Each vendored skill carries a comment naming its upstream repo and commit. See [THIRD_PARTY.md](THIRD_PARTY.md).
+Many skills are copied or adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins pstack](https://github.com/cursor/plugins/tree/main/pstack), both MIT licensed, and from [tt-a1i/archify](https://github.com/tt-a1i/archify), Apache-2.0. Each vendored skill carries a comment naming its upstream repo and commit. See [THIRD_PARTY.md](THIRD_PARTY.md).

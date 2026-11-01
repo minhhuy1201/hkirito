@@ -2,6 +2,8 @@
 
 Status: approved
 
+The HTML renderer was later vendored separately as `/archify`; see [vendor-archify-html](vendor-archify-html.md). `flow-map` itself still ships no archify code.
+
 ## Problem Statement
 
 The author joins new projects often and starts each one without knowing its business flow, its data flow, or how its screens connect. Reading code file by file is slow, and an answer in prose is hard to hold in mind.
