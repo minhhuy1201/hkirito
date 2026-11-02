@@ -71,7 +71,7 @@ mkdir -p ~/.claude/output-styles
 ln -sfn "$PWD/output-styles/caveman.md" ~/.claude/output-styles/caveman.md
 ```
 
-To turn the style on everywhere, add `"outputStyle": "caveman"` to `~/.claude/settings.json` and restart Claude Code. Commits keep using `caveman-commit`; code and code comments stay normal.
+To turn the style on everywhere, add `"outputStyle": "caveman"` to `~/.claude/settings.json` and restart Claude Code. Code and code comments stay normal. The level switch (`/caveman`) and commit messages (`caveman-commit`) need the external [caveman](https://github.com/JuliusBrussee/caveman) skills, when available.
 
 Start a new Claude Code session and run:
 
