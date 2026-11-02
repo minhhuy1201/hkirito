@@ -65,7 +65,13 @@ for d in skills/*/; do
 done
 ln -sfn "$PWD/agents/reviewer.md" ~/.claude/agents/reviewer.md
 ln -sfn "$PWD/agents/implementer.md" ~/.claude/agents/implementer.md
+
+# optional: terse caveman style for every reply, doc, and PR
+mkdir -p ~/.claude/output-styles
+ln -sfn "$PWD/output-styles/caveman.md" ~/.claude/output-styles/caveman.md
 ```
+
+To turn the style on everywhere, add `"outputStyle": "caveman"` to `~/.claude/settings.json` and restart Claude Code. Code and code comments stay normal. The level switch (`/caveman`) and commit messages (`caveman-commit`) need the external [caveman](https://github.com/JuliusBrussee/caveman) skills, when available.
 
 Start a new Claude Code session and run:
 

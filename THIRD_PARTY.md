@@ -1,6 +1,6 @@
 # Third-party notices
 
-Skills in this repo are copied from, or adapted from, the projects below. `mattpocock/skills` and `cursor/plugins` are MIT licensed; `tt-a1i/archify` is Apache-2.0. Each copied `SKILL.md` carries a provenance comment naming its source and commit.
+Skills and output styles in this repo are copied from, or adapted from, the projects below. `mattpocock/skills`, `cursor/plugins`, and the `skills/` folder of `JuliusBrussee/caveman` are MIT licensed; `tt-a1i/archify` is Apache-2.0. Each copied `SKILL.md` or output style carries a provenance comment naming its source and commit.
 
 ## mattpocock/skills
 
@@ -28,6 +28,13 @@ Skills in this repo are copied from, or adapted from, the projects below. `mattp
 - License: Apache-2.0, full text in `skills/flow-map/LICENSE`
 - Used in: `flow-map` (ported). The method only: its Type router and Mermaid input (`archify/SKILL.md`), `references/repository-authoring.md`, and the Composition and meaning and Dataflow lineage parts of `references/authoring-defaults.md`, condensed and rewritten for Mermaid output. No code, schema, example, viewer, or CLI was taken. The UI journey view is an hkirito addition.
 - Used in: `archify` (vendored). The `archify/` package copied at the same commit, with its own `LICENSE`, `NOTICE`, and `THIRD_PARTY_NOTICES.md`. Changes: the update check is always off (`scripts/check-update.mjs`, `bin/delivery-update.mjs`), remote brand capture returns unavailable and the CLI and diagnostics no longer point to it (`renderers/shared/brand-marks.mjs`, `bin/archify.mjs`, `references/brand-marks.md`, `references/authoring-defaults.md`, `schemas/README.md`, `brand-marks/README.md`), `references/update-awareness.md` and the rendered demo HTML under `examples/` are removed, and `SKILL.md` is user-invoked only, with the update notice and the proactive explainer modes removed (also in `references/explainer-authoring.md`).
+
+## JuliusBrussee/caveman
+
+- Source: https://github.com/JuliusBrussee/caveman, commit `010a8bb`, file `skills/caveman/SKILL.md`
+- Copyright (c) 2026 Julius Brussee
+- License: MIT for `skills/` (upstream `LICENSING.md`); the rest of that repo is not used
+- Used in: `output-styles/caveman.md` (adapted: always on as an output style, Boundaries extended to docs and PRs, punctuation fixes). The `caveman` and `caveman-commit` skills stay external.
 
 ## MIT License text
 
