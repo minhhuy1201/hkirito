@@ -65,7 +65,13 @@ for d in skills/*/; do
 done
 ln -sfn "$PWD/agents/reviewer.md" ~/.claude/agents/reviewer.md
 ln -sfn "$PWD/agents/implementer.md" ~/.claude/agents/implementer.md
+
+# optional: terse caveman style for every reply, doc, and PR
+mkdir -p ~/.claude/output-styles
+ln -sfn "$PWD/output-styles/caveman.md" ~/.claude/output-styles/caveman.md
 ```
+
+To turn the style on everywhere, add `"outputStyle": "caveman"` to `~/.claude/settings.json` and restart Claude Code. Commits keep using `caveman-commit`; code and code comments stay normal.
 
 Start a new Claude Code session and run:
 
