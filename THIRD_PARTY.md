@@ -1,6 +1,6 @@
 # Third-party notices
 
-Skills and output styles in this repo are copied from, or adapted from, the projects below. `mattpocock/skills`, `cursor/plugins`, and the `skills/` folder of `JuliusBrussee/caveman` are MIT licensed; `tt-a1i/archify` is Apache-2.0. Each copied `SKILL.md` or output style carries a provenance comment naming its source and commit.
+Skills and output styles in this repo are copied from, or adapted from, the projects below. `mattpocock/skills`, `cursor/plugins`, and the `skills/` folder of `JuliusBrussee/caveman` are MIT licensed; `tt-a1i/archify` is Apache-2.0; `Leonxlnx/taste-skill` is MIT. Each copied `SKILL.md` or output style carries a provenance comment naming its source and commit.
 
 ## mattpocock/skills
 
@@ -35,6 +35,13 @@ Skills and output styles in this repo are copied from, or adapted from, the proj
 - Copyright (c) 2026 Julius Brussee
 - License: MIT for `skills/` (upstream `LICENSING.md`); the rest of that repo is not used
 - Used in: `output-styles/caveman.md` (adapted: always on as an output style, Boundaries extended to docs and PRs, punctuation fixes). The `caveman` and `caveman-commit` skills stay external.
+
+## Leonxlnx/taste-skill
+
+- Source: https://github.com/Leonxlnx/taste-skill, commit `12af471f`, folder `skills/taste-skill`
+- Copyright (c) 2026 Leonxlnx
+- License: MIT, full text in `skills/design-taste-frontend/LICENSE`
+- Used in: `design-taste-frontend` (vendored). It replaces the retired `redesign-existing-projects` skill (upstream `skills/redesign-skill`, last full version at `e04409a4`, retired at `f6831c5d`); redesigns follow its "Redesign, restyle or review" route. Its scripts need Node 22+ and a local Chrome, Edge, or Chromium. Changes: open-collection search and download in `scripts/assets.mjs` stop with a notice before any request, so the skill makes no network calls of its own (`--credits` and `--help` still run; the search code stays for upstream syncs). The instructions that pointed to that search are removed from the generated sheet (`scripts/draw.mjs`, including its unused query builder), the inspector hints (`scripts/lib/rules.mjs`), `SKILL.md`, `README.md`, the `imagery` text of two directions in `library/directions.json`, `references/imagery.md` (§2, §3, §8, §10, §11), and `references/scenes.md`. Built pages may still load picsum.photos photographs, Google Fonts and Fontshare (`api.fontshare.com`) stylesheets in the browser, including the inspector's Chrome.
 
 ## MIT License text
 
