@@ -420,7 +420,7 @@
    "dark-neutral",
    "mono-accent"
   ],
-  "imagery": "The interface fragments are the main imagery: build them carefully with real labels, real numbers and sensible states (one hovered, one selected). Around them, two or three real pictures of the customer's world (found with scripts/assets.mjs), never stock of people at laptops.",
+  "imagery": "The interface fragments are the main imagery: build them carefully with real labels, real numbers and sensible states (one hovered, one selected). Around them, two or three real pictures of the customer's world (the project's own, or the dealt photographs where an honestly generic picture fits), never stock of people at laptops.",
   "sectionTags": [
    "ui-led",
    "quiet"
@@ -1057,7 +1057,7 @@
    "light-neutral",
    "dark-neutral"
   ],
-  "imagery": "The first screen has no picture. Further down, real pictures of the subject's world (found with scripts/assets.mjs) arrive large and few: a full-bleed photograph between two type sections, a looping clip in one band, an archival image beside a list. Do not add icons, shapes, patterns or abstract graphics to compensate for anything.",
+  "imagery": "The first screen has no picture. Further down, real pictures of the subject's world (the project's own, or the dealt photographs) arrive large and few: a full-bleed photograph between two type sections, a looping clip in one band, an archival image beside a list. Do not add icons, shapes, patterns or abstract graphics to compensate for anything.",
   "sectionTags": [
    "type-led",
    "poster",

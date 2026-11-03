@@ -13,7 +13,7 @@ description: >-
   people work in, with their own run and rules.
 ---
 
-<!-- vendored from Leonxlnx/taste-skill@12af471f skills/taste-skill (MIT), modified: assets.mjs search and download disabled (no network calls), see THIRD_PARTY.md -->
+<!-- vendored from Leonxlnx/taste-skill@12af471f skills/taste-skill (MIT), modified: assets.mjs search and download disabled (no network calls), instructions that pointed to it rewritten in SKILL.md, README.md, scripts/draw.mjs, scripts/lib/rules.mjs, library/directions.json, references/imagery.md and references/scenes.md, see THIRD_PARTY.md -->
 
 # tasteskill v2
 
@@ -446,7 +446,7 @@ Short form. Numbers are from the study unless marked as house style.
 - No image is better than a placeholder, an icon, or an abstract shape. A picture drawn for this
   subject, in its colours and with care, is better than either. A real picture of its world, found
   and credited, is better still.
-- Every found picture is downloaded into the project, credited on the page and listed in the report.
+- Every found picture the user supplies is saved into the project, credited on the page and listed in the report.
   None is presented as the client's own.
 - Nothing ever lies on top of a headline or a statement (the inspector fails it).
 

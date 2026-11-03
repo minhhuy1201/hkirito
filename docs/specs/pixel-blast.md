@@ -64,7 +64,7 @@ Install, for anyone who clones the repo: `claude --plugin-dir <repo>/mods/pixel-
 - **Placement.** `$.ui.open` places an unasked pane from 144 columns. When it answers `isPlaced: false`, the same report draws in the `AbovePrompt` band, which yields to a survey (`hasSurvey`).
 - **Visual design (terminal).** Restrained: no level label and no accent colours: the default foreground, bold for the header, dim for the size bars and notes. Header: the command in bold, the summary dim under it. Item rows: label left, `■` bar scaled to the largest item, human size right (`412K`, `1.1M`). At most 8 rows, then `…N more`. Buttons drawn `plain` with hotkeys `1` and `2`. Size bars drop under 32 body columns. Single-width glyphs only.
 - **Other surfaces.** Same report as plain `Text` rows and two buttons, no glyph art.
-- **Design source.** `design-taste-frontend` principles (formerly `redesign-skill`) (no generic AI patterns, deliberate spacing, restrained palette) applied to a terminal element tree; its CSS-specific rules do not apply.
+- **Design source.** `design-taste-frontend` principles (no generic AI patterns, deliberate spacing, restrained palette; formerly `redesign-skill`) applied to a terminal element tree; its CSS-specific rules do not apply.
 
 ## Testing Decisions
 

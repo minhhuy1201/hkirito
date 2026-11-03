@@ -49,22 +49,20 @@ In order of preference:
 2. **Images you can generate** with an image tool in this session. Write prompts as a photographer's
    brief: subject, angle, light, background, crop ratio, and "no text". Generate the hero first and
    make the rest match its light.
-3. **Real pictures of the subject's world from the open collections** (section 3). Archives,
-   museums and photographers have published millions of pictures anyone may use with a credit: the
-   client's city and street in old postcards, maps of its neighbourhood, its materials, its trade in
-   engravings, museum objects of its kind. Whenever an honest one exists, it beats a drawing of the
-   same thing: it is real, it has detail no drawing in a page's budget reaches, and it carries history.
-   Honest means nobody could take it for the client's own product, room, dish, person or team.
-4. **Pictures you draw in code from the subject itself** (section 8), for what no honest picture
+3. **Pictures you draw in code from the subject itself** (section 8), for what no honest picture
    exists of: the product's own objects as flat shapes, the place's tiles and windows, a map of its
    streets, the document a tool produces, the interface of a piece of software. In testing, pages that
    drew their subject with care beat pages that borrowed unrelated photographs every time, and beat
    pages that showed nothing.
-5. **The photographs dealt on the direction sheet.** Real photographs of places, light, texture and
+4. **The photographs dealt on the direction sheet.** Real photographs of places, light, texture and
    weather. Use them only where an honestly generic picture fits (the open sea for a house on the sea,
    fog for a quiet retreat). They cannot stand in for a specific product, dish, room, person or
    screen: a foggy motorway on a restaurant page reads as stock at once, and jurors notice.
-6. **Type and colour alone,** done on purpose (section 9).
+5. **Type and colour alone,** done on purpose (section 9).
+
+A real picture of the subject's world from the open collections that the user supplies (section 3)
+beats a drawing of the same thing, as long as nobody could take it for the client's own product, room,
+dish, person or team.
 
 Tell `draw.mjs` the truth with `--have`. If you have no product photographs and no image tool, do not
 pass `product-photo`; the draw will avoid the directions that depend on showing the object. Pictures
@@ -89,7 +87,7 @@ pictures at least 1000 pixels wide, and checks that every image it prints actual
 `--license pd` keeps only pictures that need no credit; `--orientation`, `--min-width` and `--limit`
 narrow the list; `--source` picks the sources; `--json` gives the raw results.
 
-**What to search for.** The inventory (SKILL.md step 1), not the category: "bakery" finds other
+**What to look for,** in pictures the user supplies or asks you to suggest. The inventory (SKILL.md step 1), not the category: "bakery" finds other
 people's bakeries. The subject's world is specific:
 
 - **Its place:** the city, the street, the harbour, the valley, in old postcards and photographs
@@ -106,17 +104,17 @@ people's bakeries. The subject's world is specific:
 - **Scientific imagery:** botanical and zoological plates ("botanical engraving fig"), star charts,
   microscope photographs, satellite views of its coast, geological sections.
 
-Search in the place's own words (azulejo, not "blue tile"; Korenmarkt, not "market square"), add a
+Suggest searches in the place's own words (azulejo, not "blue tile"; Korenmarkt, not "market square"), add a
 medium (postcard, engraving, old map, lithograph, aerial photograph) or a decade, and try two or three
 queries per idea. The museum sources match best on one or two words ("fig", "harbour", "teapot").
 
 **What makes a good find.**
 
 - It belongs to this subject's world and would not fit the nearest competitor's page.
-- It still reads at the crop the slot needs. Look at it before deciding: `--get` downloads it, then
-  open the file. A title is not a picture.
-- It is large enough: twice the width it is shown at for anything full-bleed (the script prints the
-  largest size available). A 1024-pixel Flickr photograph is a half-width picture at most.
+- It still reads at the crop the slot needs. Open the file before deciding. A title is not a
+  picture.
+- It is large enough: twice the width it is shown at for anything full-bleed (check the largest size the
+  source has). A 1024-pixel Flickr photograph is a half-width picture at most.
 - It belongs to one family with the others on the page: all engravings, or all photographs from one
   era, or all close surfaces in one light. A 1900 postcard beside a modern stock photograph beside a
   botanical plate reads as a scrapbook.
@@ -147,22 +145,20 @@ Treatments stay within section 6: untouched, greyscale for the whole set, or mul
   plate of pasta, a smiling barista, a guest room), do not use it.
 - **Caption from the source** when a caption helps: what it is and when, as the archive describes it
   ("Gand, unloading a steamer, 1905"). Never write a caption that ties it to the client.
-- **Record and credit every picture.** `--get` writes the source, creator, licence and page of each
-  download to `assets/credits.json`. CC BY and CC BY-SA require a credit with the title, the creator,
-  a link to the source and a link to the licence; `--credits` prints them as one line of HTML for
-  the footer (section 10). Public-domain pictures need no credit; give one anyway.
+- **Record and credit every picture.** Note the source, creator, licence and page of each picture.
+  CC BY and CC BY-SA require a credit with the title, the creator, a link to the source and a link to
+  the licence, as one line of HTML in the footer (section 10). Public-domain pictures need no credit; give one anyway.
 - **Respect the licence.** CC BY-SA: an altered version (recoloured, combined with other pictures)
   must be shared under the same licence. Non-commercial (NC) and no-derivatives (ND) licences are out
-  for a client's site, which is why the script leaves them out unless asked. Read the `note` lines:
+  for a client's site. Read the `note` lines:
   some pictures carry personality rights or a trademark, are public domain only in the United States,
   or come with an archive's statement instead of a licence.
-- **Download, do not hotlink.** Save what you use into the project: `--get` puts it in `assets/` at
-  1920 pixels wide (pass `--width 1280` for a picture shown at half the screen, `--width 3840` for a
-  very large hero where the source has it). The page then works offline, does not break when an
-  archive moves a file, and does not load from someone else's server. Every licence the script
-  allows by default permits copying.
+- **Download, do not hotlink.** Save what you use into the project's `assets/` at
+  1920 pixels wide (1280 for a picture shown at half the screen, 3840 for a very large hero where the
+  source has it). The page then works offline, does not break when an
+  archive moves a file, and does not load from someone else's server. CC0, public domain, CC BY and
+  CC BY-SA all permit copying.
 - **List them in the report:** file, title, creator, licence, source page, and where the credit sits.
-  `--credits` prints that list too.
 
 If two or three honest queries per idea find nothing that fits, draw (section 8). A drawing made for
 the subject is better than a found picture that is merely nearby. In this copy the search is
@@ -236,7 +232,7 @@ or a fade from 55% black to transparent over the lower third. Never a coloured o
 
 ## 8. Drawing the subject
 
-When nothing real can be photographed and the open collections hold no honest picture of it, draw it,
+When nothing real can be photographed and the user has no honest found picture of it, draw it,
 and draw it well. Inline SVG and CSS are enough. Drawings and found pictures can share a page: the
 found ones show the world around the client, the drawings show the client's own things.
 
@@ -279,7 +275,7 @@ and they hold their own: a median panel score of 7.5 against 7.2 for the whole s
 
 ## 10. Markup and credits
 
-A found picture, downloaded into the project with `--get`, used as the hero:
+A found picture, saved into the project, used as the hero:
 
 ```html
 <img src="assets/fig-engraving.jpg" width="1920" height="2807" fetchpriority="high" decoding="async"
@@ -293,7 +289,7 @@ A dealt photograph further down the page:
      alt="Red and white lighthouse in a turquoise sea below a chalk cliff" loading="lazy" decoding="async">
 ```
 
-The credits, as `--credits` prints them, in the footer:
+The credits, in the footer:
 
 ```html
 <p class="credits">Pictures: <a href="https://commons.wikimedia.org/wiki/File:Fig_(Ficus_carica_L.);_57_segments_of_flowers_and_fruits_at_Wellcome_V0043000.jpg">“Fig (Ficus carica L.): 57 segments of flowers and fruits”</a>, <a href="https://creativecommons.org/publicdomain/mark/1.0/">public domain</a>, via Wikimedia Commons.</p>
@@ -323,10 +319,7 @@ educational, city and home films from the 1920s to the 1970s, mostly public doma
 and NASA (the Earth from orbit, launches, aircraft, laboratories). The rest of the Internet Archive is
 left out: anyone can upload there, and the licence claims are unchecked.
 
-It takes a rendition of 720p or smaller (`--res` changes that), lists short clips first, prints each
-clip's length and file size, and flags anything over 25 MB or longer than a minute. `--get` refuses a
-clip over 25 MB unless you pass `--max-mb`, and saves the source's still frame beside it as the
-poster (Commons and NASA; the archive's own stills are too small). An archive film of ten minutes is
+Keep a clip at 720p or smaller and under 25 MB, and save a still frame beside it as the poster. An archive film of ten minutes is
 too heavy as it stands: trim a few seconds from it with ffmpeg if it is installed, or choose a
 shorter clip. Licences, credits and honesty work exactly as for pictures (section 3).
 
@@ -348,7 +341,7 @@ shorter clip. Licences, credits and honesty work exactly as for pictures (sectio
 
 **On the page.**
 
-- Muted, looping, inline, with a poster and a fixed size, as `--get` prints it:
+- Muted, looping, inline, with a poster and a fixed size:
   `<video autoplay muted loop playsinline preload="metadata" poster="assets/river-poster.jpg"
   width="854" height="480" aria-hidden="true"><source src="assets/river.webm" type="video/webm"></video>`.
   No sound and no controls on a decorative loop. `aria-hidden` because it is decoration: whatever the
@@ -395,8 +388,8 @@ shorter clip. Licences, credits and honesty work exactly as for pictures (sectio
   one second can be bright at the next. If any frame drops below 4.5:1 (3:1 for 24px and up), use the
   scrim in section 6 or move the text off the clip. Nothing lies on top of a headline or a statement.
 - It is motion: let it be the page's one moving thing, or sit in a section where nothing else moves.
-- Credit it with the pictures: `--credits` prints one footer line for both ("Pictures and footage:")
-  and the list for the report, with each clip's length.
+- Credit it with the pictures in one footer line for both ("Pictures and footage:"), and list it in
+  the report with the clip's length.
 - Where footage goes (hero background, inline loop, the frame that grows, a docked card), and what
   the study measured about it: section 12. Nothing that matters plays on hover only, and a full film
   with sound sits behind a play button that opens a player with controls.
