@@ -150,7 +150,7 @@ Treatments stay within section 6: untouched, greyscale for the whole set, or mul
   the licence, as one line of HTML in the footer (section 10). Public-domain pictures need no credit; give one anyway.
 - **Respect the licence.** CC BY-SA: an altered version (recoloured, combined with other pictures)
   must be shared under the same licence. Non-commercial (NC) and no-derivatives (ND) licences are out
-  for a client's site. Read the `note` lines:
+  for a client's site. Check the source page:
   some pictures carry personality rights or a trademark, are public domain only in the United States,
   or come with an archive's statement instead of a licence.
 - **Download, do not hotlink.** Save what you use into the project's `assets/` at
