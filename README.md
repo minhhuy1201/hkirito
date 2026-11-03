@@ -169,12 +169,13 @@ flowchart TD
     M -->|haiku| M1["retry on sonnet (counts as the escalation)"]
     M -->|sonnet| M2["retry on opus"]
     M -->|opus| D
-    A --> N{"second retry failed?"}
-    B --> N
-    M1 --> N
-    M2 --> N
-    N -->|no| OK(["hands back: normal checks apply"])
-    N -->|yes| D["drop: Status: blocked (cause) agent-id, skip dependents, replan in a new Opus session"]
+    A --> R{"retry hands back?"}
+    B --> R
+    M1 --> R
+    M2 --> R
+    R -->|yes| OK(["hands back: normal checks apply"])
+    R -->|"no, 1st retry"| G
+    R -->|"no, 2nd retry"| D["drop: Status: blocked (#lt;cause#gt;) agent-#lt;agentId#gt;, skip dependents, replan in a new Opus session"]
 ```
 
 </details>
