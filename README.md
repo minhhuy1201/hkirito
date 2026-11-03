@@ -155,8 +155,27 @@ Spec: [`docs/specs/kirito-mode.md`](docs/specs/kirito-mode.md). Plan: [`docs/pla
 1. The `feature` route stops once you approve the ticket breakdown. It then asks you to `/clear`, switch to Sonnet 5.5, and run `/kirito-mode --delegate feature <plan dir>`. Later spec or plan work starts a new Opus session.
 2. `to-tickets` tags each ticket `Model: haiku` (mechanical work) or `Model: sonnet`. A Haiku ticket that fails its checks twice, or draws a `must-fix`, is re-dispatched once on Sonnet.
 3. An implementer is done only when tests, lint, and typecheck pass.
-4. An implementer that crashes is retried by cause: a smaller scope after a context limit, the same prompt after a dropped connection, a different model after a tool error. After two retries the ticket is dropped and replanned. At the end, escalated, retried, or dropped tickets are listed with their transcript paths so you can run `/retro` on one.
-5. During review, fixes that touch at most 2 files and change no interface are made inline. The exception is a `must-fix` on a `haiku` ticket that hasn't been escalated yet, which goes to Sonnet with the batch. Larger fixes go to one implementer for the whole batch.
+4. An implementer that dies before it hands back has crashed. A crash is not a failed check, so it never counts toward the Haiku escalation. The session runs `git status`, names any half-written files in the retry prompt, then retries by cause (flow below). Each retry writes `Retried: <n> (<cause>) agent-<agentId>` into the ticket, so the record survives `/clear`.
+5. At the end of the run, the session lists every ticket whose file shows `Escalated:`, `Retried:`, or `Status: blocked`, with its implementer transcript path, and suggests `/retro <path>` for the worst one. `retro` is user-only, so the session never runs it. With nothing to report, there is no list.
+6. During review, fixes that touch at most 2 files and change no interface are made inline. The exception is a `must-fix` on a `haiku` ticket that hasn't been escalated yet, which goes to Sonnet with the batch. Larger fixes go to one implementer for the whole batch. If that batch implementer crashes, it follows the same retry flow, each retry is noted in the review log, and a dropped batch leaves its findings `OPEN` for you. When the loop ends, `review-loop` lists the escalated, retried, or dropped tickets the same way as step 5.
+
+```mermaid
+flowchart TD
+    C(["implementer dies before hand-back"]) --> G["git status: name half-written files"]
+    G --> K{"cause?"}
+    K -->|"context or memory limit"| A["retry with a smaller scope: unmet criteria + files already changed"]
+    K -->|"dropped connection or overloaded API"| B["retry with the same kickoff"]
+    K -->|"tool error"| M{"model?"}
+    M -->|haiku| M1["retry on sonnet (counts as the escalation)"]
+    M -->|sonnet| M2["retry on opus"]
+    M -->|opus| D
+    A --> N{"second retry failed?"}
+    B --> N
+    M1 --> N
+    M2 --> N
+    N -->|no| OK(["hands back: normal checks apply"])
+    N -->|yes| D["drop: Status: blocked (cause) agent-id, skip dependents, replan in a new Opus session"]
+```
 
 </details>
 
