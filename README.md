@@ -155,7 +155,8 @@ Spec: [`docs/specs/kirito-mode.md`](docs/specs/kirito-mode.md). Plan: [`docs/pla
 1. The `feature` route stops once you approve the ticket breakdown. It then asks you to `/clear`, switch to Sonnet 5.5, and run `/kirito-mode --delegate feature <plan dir>`. Later spec or plan work starts a new Opus session.
 2. `to-tickets` tags each ticket `Model: haiku` (mechanical work) or `Model: sonnet`. A Haiku ticket that fails its checks twice, or draws a `must-fix`, is re-dispatched once on Sonnet.
 3. An implementer is done only when tests, lint, and typecheck pass.
-4. During review, fixes that touch at most 2 files and change no interface are made inline. The exception is a `must-fix` on a `haiku` ticket that hasn't been escalated yet, which goes to Sonnet with the batch. Larger fixes go to one implementer for the whole batch.
+4. An implementer that crashes is retried by cause: a smaller scope after a context limit, the same prompt after a dropped connection, a different model after a tool error. After two retries the ticket is dropped and replanned. At the end, escalated, retried, or dropped tickets are listed with their transcript paths so you can run `/retro` on one.
+5. During review, fixes that touch at most 2 files and change no interface are made inline. The exception is a `must-fix` on a `haiku` ticket that hasn't been escalated yet, which goes to Sonnet with the batch. Larger fixes go to one implementer for the whole batch.
 
 </details>
 
