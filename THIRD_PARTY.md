@@ -1,6 +1,6 @@
 # Third-party notices
 
-Skills and output styles in this repo are copied from, or adapted from, the projects below. `mattpocock/skills`, `cursor/plugins`, and the `skills/` folder of `JuliusBrussee/caveman` are MIT licensed; `tt-a1i/archify` is Apache-2.0. Each copied `SKILL.md` or output style carries a provenance comment naming its source and commit.
+Skills and output styles in this repo are copied from, or adapted from, the projects below. `mattpocock/skills`, `cursor/plugins`, and the `skills/` folder of `JuliusBrussee/caveman` are MIT licensed; `tt-a1i/archify` is Apache-2.0; `Leonxlnx/taste-skill` is MIT. Each copied `SKILL.md` or output style carries a provenance comment naming its source and commit.
 
 ## mattpocock/skills
 
@@ -35,6 +35,13 @@ Skills and output styles in this repo are copied from, or adapted from, the proj
 - Copyright (c) 2026 Julius Brussee
 - License: MIT for `skills/` (upstream `LICENSING.md`); the rest of that repo is not used
 - Used in: `output-styles/caveman.md` (adapted: always on as an output style, Boundaries extended to docs and PRs, punctuation fixes). The `caveman` and `caveman-commit` skills stay external.
+
+## Leonxlnx/taste-skill
+
+- Source: https://github.com/Leonxlnx/taste-skill, commit `12af471f`, folder `skills/taste-skill`
+- Copyright (c) 2026 Leonxlnx
+- License: MIT, full text in `skills/design-taste-frontend/LICENSE`
+- Used in: `design-taste-frontend` (vendored, unmodified apart from the provenance comment). It replaces the retired `redesign-existing-projects` skill (upstream `skills/redesign-skill`, last full version at `e04409a4`, retired at `f6831c5d`); redesigns follow its "Redesign, restyle or review" route. Its scripts need Node 22+ and a local Chrome, Edge, or Chromium; `assets.mjs` and `inspect.mjs` make network calls (public image APIs, Google Fonts).
 
 ## MIT License text
 
