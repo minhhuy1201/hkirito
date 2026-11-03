@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 // tasteskill / assets: find real, openly licensed pictures of the subject's world, and keep their credits.
 //
+// hkirito copy: search and --get are disabled so the skill makes no network calls; only --credits and
+// --help run. The search and download code below is kept unchanged to ease upstream syncs.
+//
 // A page without photographs of its own does not have to draw everything. Archives, museums and open
 // collections hold the subject's city and street, its maps, its materials, its trade's history and the
 // museum objects of its kind, free to use with a credit. This searches them without keys and prints what
@@ -52,6 +55,9 @@ const AIC_FIELDS = ['id', 'title', 'artist_title', 'artist_display', 'date_displ
 const AIC_HEADERS = { 'AIC-User-Agent': UA };
 
 const USAGE = `Find real, openly licensed pictures of the subject's world, download them, keep their credits.
+
+Disabled in this copy (no network calls): search and --get stop with a notice. --credits still prints the
+credits recorded in credits.json.
 
   ${CMD} "<query>" [options]
       --source all|openverse|commons|aic|met|museums   comma-separated; default all
@@ -839,7 +845,7 @@ async function getAll(refs, opts) {
 function printCredits(opts) {
   const list = readCredits(opts);
   const uniq = list.filter((c, i) => list.findIndex((x) => x.ref === c.ref) === i && existsSync(resolve(c.file)));
-  if (!uniq.length) { console.log(`No pictures recorded in ${rel(creditsPath(opts))} yet. Download them with --get <ref> first.`); return 1; }
+  if (!uniq.length) { console.log(`No pictures recorded in ${rel(creditsPath(opts))} yet.`); return 1; }
   const html = (c) => {
     const by = c.creator && !/^(unknown|anonymous)\b/i.test(c.creator) ? ` by ${esc(short(c.creator, 60))}` : '';
     const date = /^(aic|met):/.test(c.ref) && c.date ? `, ${esc(short(c.date, 30))}` : '';
@@ -859,6 +865,8 @@ function printCredits(opts) {
 // ---------- run ----------
 if (args.help) { console.log(USAGE); process.exit(0); }
 if (args.credits) process.exit(printCredits(o));
+console.error("Network search and download are disabled in this copy of the skill (no network calls). Use the project's own pictures, draw them in code, or use the dealt photographs.");
+process.exit(1);
 if (args.get) process.exit(await getAll(String(args.get).split(',').map((s) => s.trim()).filter(Boolean), o));
 const query = words.join(' ').trim();
 if (!query) fail('Give a search query, for example: node assets.mjs "ghent postcard"');

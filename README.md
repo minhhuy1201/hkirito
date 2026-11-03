@@ -294,4 +294,4 @@ THIRD_PARTY.md     upstream sources and licenses
 
 ## Credits
 
-Many skills are copied or adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins pstack](https://github.com/cursor/plugins/tree/main/pstack), both MIT licensed, from [tt-a1i/archify](https://github.com/tt-a1i/archify), Apache-2.0, and from [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill), MIT (`design-taste-frontend`, which also covers redesigns of existing pages). Each vendored skill carries a comment naming its upstream repo and commit. See [THIRD_PARTY.md](THIRD_PARTY.md).
+Many skills are copied or adapted from [mattpocock/skills](https://github.com/mattpocock/skills) and [cursor/plugins pstack](https://github.com/cursor/plugins/tree/main/pstack), both MIT licensed, from [tt-a1i/archify](https://github.com/tt-a1i/archify), Apache-2.0, and from [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill), MIT (`design-taste-frontend`, which also covers redesigns of existing pages; vendored with its network search turned off). Each vendored skill carries a comment naming its upstream repo and commit. See [THIRD_PARTY.md](THIRD_PARTY.md).

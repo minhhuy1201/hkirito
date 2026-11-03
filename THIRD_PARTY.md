@@ -41,7 +41,7 @@ Skills and output styles in this repo are copied from, or adapted from, the proj
 - Source: https://github.com/Leonxlnx/taste-skill, commit `12af471f`, folder `skills/taste-skill`
 - Copyright (c) 2026 Leonxlnx
 - License: MIT, full text in `skills/design-taste-frontend/LICENSE`
-- Used in: `design-taste-frontend` (vendored, unmodified apart from the provenance comment). It replaces the retired `redesign-existing-projects` skill (upstream `skills/redesign-skill`, last full version at `e04409a4`, retired at `f6831c5d`); redesigns follow its "Redesign, restyle or review" route. Its scripts need Node 22+ and a local Chrome, Edge, or Chromium; `assets.mjs` and `inspect.mjs` make network calls (public image APIs, Google Fonts).
+- Used in: `design-taste-frontend` (vendored). It replaces the retired `redesign-existing-projects` skill (upstream `skills/redesign-skill`, last full version at `e04409a4`, retired at `f6831c5d`); redesigns follow its "Redesign, restyle or review" route. Its scripts need Node 22+ and a local Chrome, Edge, or Chromium. Changes: open-collection search and download in `scripts/assets.mjs` stop with a notice before any request, so the skill makes no network calls of its own (`--credits` and `--help` still run; the search code stays for upstream syncs). The instructions that pointed to that search are removed from the generated sheet (`scripts/draw.mjs`, including its unused query builder), the inspector hints (`scripts/lib/rules.mjs`), `SKILL.md`, `README.md`, `references/imagery.md` §3 and §11, and `references/scenes.md`. Built pages may still load picsum.photos photographs and Google Fonts in the browser, including the inspector's Chrome.
 
 ## MIT License text
 

@@ -17,10 +17,8 @@ render before calling the work done.
 3. **Idea and live thing.** One sentence tying the client's own material to the direction's device,
    checked against the nearest competitor, and one thing the visitor can do on the page.
 4. **Build** from the sheet, words first, full content. When the project has no photographs of its
-   own, `scripts/assets.mjs` finds real pictures of the subject's world in open collections (its
-   street in old postcards, old maps, its materials, engravings of its trade, museum objects of its
-   kind), downloads them into the project and records their credits; the subject is drawn in code
-   only where no honest picture exists.
+   own, the subject is drawn in code and the dealt photographs carry atmosphere. (Open-collection
+   search in `scripts/assets.mjs` is disabled in this copy, so the skill makes no network calls.)
 5. **Gate.** `scripts/lint.mjs` (source) and `scripts/inspect.mjs` (real browser, 1440 / 768 / 390)
    measure the house rules: headlines of two lines or fewer, no eyebrow labels, no monospace, no
    01/02/03, no thin rules, no gradients, no resting shadows, no cream-and-terracotta, no violet, and
@@ -38,9 +36,8 @@ Five rounds of blind tests against a no-skill baseline and another design skill 
 SKILL.md                 the run, the house rules, the laws
 references/              copy, type, colour, layout, imagery, motion, critique, tells, research
 scripts/draw.mjs         deal options / a direction / reprint / redraw; --alternatives, --photos, --site
-scripts/assets.mjs       search open image collections (Openverse, Wikimedia Commons, Art Institute of
-                         Chicago, the Met) and, with --video, real footage (Wikimedia Commons, Internet
-                         Archive, NASA); --get downloads with the credit, --credits prints them
+scripts/assets.mjs       search and --get disabled in this copy (no network calls); --credits prints the
+                         credits already recorded in assets/credits.json
 scripts/lint.mjs         static scan for banned patterns and stock phrases
 scripts/inspect.mjs      render, measure, photograph
 scripts/lib/             zero-dependency Chrome DevTools client, the in-page probe, the rules
@@ -54,7 +51,7 @@ evals/evals.json         six briefs for testing the skill against a no-skill bas
 
 Node 22 or newer and an installed Chrome, Edge or Chromium for `inspect.mjs` (it drives the browser
 over the DevTools protocol with Node's built-in WebSocket; nothing is installed). `draw.mjs`,
-`lint.mjs` and `assets.mjs` run on Node 18+; `assets.mjs` needs network access and no API keys. Set
+`lint.mjs` and `assets.mjs` run on Node 18+. No script makes network calls of its own. Set
 `CHROME_PATH` if the browser is somewhere unusual.
 
 ## Install
@@ -66,12 +63,10 @@ a repository under `.claude/skills/`.
 
 - Photographs in the library are served by Lorem Picsum from Unsplash, under the Unsplash licence.
   They are placeholders for atmosphere; replace them with the project's own pictures.
-- Pictures found with `assets.mjs` keep their own licences. By default it offers only CC0, public
-  domain, CC BY and CC BY-SA, and `--get` records the title, creator, licence and source of every
-  download in `assets/credits.json`. The page must carry the credits (`--credits` prints them).
-- `assets.mjs --video` finds short clips of the subject's world, takes a 720p-or-smaller rendition,
-  refuses files over 25 MB unless `--max-mb` is passed, and saves a poster frame with each clip; how
-  to use one on a page (muted loop, poster, stopped under reduced motion) is in
+- These photographs load from picsum.photos when a built page opens in a browser, including the
+  inspector's Chrome. That request comes from the page, not from the skill's scripts.
+- Third-party pictures and clips the user supplies keep their own licences, and the page must carry
+  their credits. How to use a clip on a page (muted loop, poster, stopped under reduced motion) is in
   `references/imagery.md` §11.
 - Fonts are loaded from Google Fonts and Fontshare. Check each face's licence for your use.
 - The scores in `references/research.md` are model judgements from screenshots, not Awwwards scores.

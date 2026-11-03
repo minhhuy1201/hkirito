@@ -72,7 +72,10 @@ found in the open collections are not the project's own: do not pass `photograph
 
 ## 3. Real pictures from the open collections
 
-`scripts/assets.mjs` searches four open sources without keys and prints, for each find, a direct image
+**Disabled in this copy.** The skill makes no network calls, so `assets.mjs` search and `--get` stop
+with a notice. Pictures the user supplies from these collections follow the licence, credit and honesty
+rules below; otherwise draw (section 8) or use the dealt photographs (section 4). Upstream,
+`scripts/assets.mjs` searched four open sources without keys and printed, for each find, a direct image
 URL, the page it comes from, its size, its creator, its licence and a credit line:
 
 - **Openverse**: one index over Flickr, Wikimedia Commons, museums and libraries.
@@ -81,19 +84,10 @@ URL, the page it comes from, its size, its creator, its licence and a credit lin
 - **The Art Institute of Chicago** and **The Metropolitan Museum of Art**: public-domain paintings,
   prints, drawings, photographs, textiles and objects, in large scans.
 
-```bash
-node <skill>/scripts/assets.mjs "ghent postcard"
-node <skill>/scripts/assets.mjs "fig" --source museums --orientation portrait
-node <skill>/scripts/assets.mjs "basalt texture" --min-width 2400 --source openverse,commons
-node <skill>/scripts/assets.mjs --get commons:36649959,met:707892     # download, record the credits
-node <skill>/scripts/assets.mjs --credits                             # footer line and report list
-```
-
-By default it keeps only licences that allow commercial use (CC0, public domain, CC BY, CC BY-SA) and
+By default it kept only licences that allow commercial use (CC0, public domain, CC BY, CC BY-SA) and
 pictures at least 1000 pixels wide, and checks that every image it prints actually loads.
 `--license pd` keeps only pictures that need no credit; `--orientation`, `--min-width` and `--limit`
-narrow the list; `--source` picks the sources; `--json` gives the raw results. Each result has a ref
-(`commons:36649959`) that `--get` takes.
+narrow the list; `--source` picks the sources; `--json` gives the raw results.
 
 **What to search for.** The inventory (SKILL.md step 1), not the category: "bakery" finds other
 people's bakeries. The subject's world is specific:
@@ -171,9 +165,8 @@ Treatments stay within section 6: untouched, greyscale for the whole set, or mul
   `--credits` prints that list too.
 
 If two or three honest queries per idea find nothing that fits, draw (section 8). A drawing made for
-the subject is better than a found picture that is merely nearby. If the script cannot reach any
-source (no network), draw, and say so in the report. For moving pictures, the same script searches
-real footage with `--video` (section 11).
+the subject is better than a found picture that is merely nearby. In this copy the search is
+disabled, so draw unless the user supplies the picture.
 
 ## 4. The dealt photographs
 
@@ -322,18 +315,13 @@ The credits, as `--credits` prints them, in the footer:
 ## 11. Video
 
 A moving picture of the subject's world can carry a section the way a photograph does: the river at
-the end of the street, the roaster's drum turning, a timber frame going up. `assets.mjs --video`
-searches real footage without keys: Wikimedia Commons (every video there comes with web-sized
+the end of the street, the roaster's drum turning, a timber frame going up. Use a clip the project
+or the user supplies: `assets.mjs --video` is disabled in this copy (no network calls). Upstream it
+searched real footage without keys: Wikimedia Commons (every video there comes with web-sized
 transcodes; the best source for short clips), the Internet Archive's Prelinger Archives (industrial,
 educational, city and home films from the 1920s to the 1970s, mostly public domain and mostly long)
 and NASA (the Earth from orbit, launches, aircraft, laboratories). The rest of the Internet Archive is
 left out: anyone can upload there, and the licence claims are unchecked.
-
-```bash
-node <skill>/scripts/assets.mjs "coffee roasting" --video
-node <skill>/scripts/assets.mjs "river" --video --source commons,nasa --orientation landscape
-node <skill>/scripts/assets.mjs --get commons:49769620        # the clip, a poster frame, the credit
-```
 
 It takes a rendition of 720p or smaller (`--res` changes that), lists short clips first, prints each
 clip's length and file size, and flags anything over 25 MB or longer than a minute. `--get` refuses a

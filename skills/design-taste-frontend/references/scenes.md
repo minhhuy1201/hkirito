@@ -78,8 +78,8 @@ A scene is only as strong as what goes in it. The scene file's header and the sh
 say how many pictures and words it takes; these hold for all of them:
 
 - **Pictures of one family.** Same light, same grade, same kind of subject: a field of mismatched stock
-  photographs breaks the illusion of one space faster than any timing error. Real pictures of the
-  subject's world (`assets.mjs`), the project's own, or the dealt photographs, in that order
+  photographs breaks the illusion of one space faster than any timing error. The project's own
+  pictures, then the dealt photographs, in that order
   (`references/imagery.md`). Size each to its largest display size, set `width` and `height`.
 - **Words that read in a breath.** A held statement is 4 to 12 words; captions are one to four words in
   the text face, sentence case. One statement on screen at a time.

@@ -13,7 +13,7 @@ description: >-
   people work in, with their own run and rules.
 ---
 
-<!-- vendored from Leonxlnx/taste-skill@12af471f skills/taste-skill (MIT), unmodified, see THIRD_PARTY.md -->
+<!-- vendored from Leonxlnx/taste-skill@12af471f skills/taste-skill (MIT), modified: assets.mjs search and download disabled (no network calls), see THIRD_PARTY.md -->
 
 # tasteskill v2
 
@@ -41,7 +41,8 @@ section carrying its full content. The skill is built to give you that; do not t
 
 In the commands below `<skill>` is this skill's folder. Run them from the project's root, so the
 working files land in `.taste-skill/` there. The scripts need Node 22+ and an installed Chrome, Edge
-or Chromium, and install nothing. `assets.mjs` also needs network access; it uses no API keys.
+or Chromium, and install nothing. The scripts make no network calls of their own (`assets.mjs` search
+is disabled in this copy); a page you build may still load remote fonts or photographs in the browser.
 
 ## Page or app screen
 
@@ -80,9 +81,7 @@ Do these in order. Steps 1–5 take a few minutes and decide whether the page is
 Find out what is real: the subject, the audience, the one thing the page must get someone to do, the
 stack, any existing brand (colours, fonts, logo), and above all **what imagery truly exists**: the
 project's own photographs or product shots, a real interface that can be shown, an image generation
-tool you can call, or nothing. Do not plan around pictures you do not have. Nothing of its own is
-rarely nothing at all: the subject's city, street, materials and history are in open archives and
-museums, free to use with a credit (step 6, `scripts/assets.mjs`).
+tool you can call, or nothing. Do not plan around pictures you do not have.
 
 If the request is vague, decide and state your reading in one line instead of asking. Ask only when a
 missing fact blocks the work (for example, no product name).
@@ -97,7 +96,7 @@ seven); the printed things of its world (a timetable, a label, a ticket, a sign)
 the idea comes from in step 4. In blind tests, the page that won each brief was built from an item on
 such a list (the client's name and what it means, the street it stands in, the one constraint that
 makes it what it is), and the pages that lost had a good composition with a category idea. The list
-is also your picture search: each place, material and printed thing on it is a query for step 6.
+is also your drawing list: each place, material and printed thing on it is something to draw in step 6.
 
 ### 2. Write the argument
 
@@ -133,8 +132,7 @@ node <skill>/scripts/draw.mjs <the same arguments, without --options> --directio
   that can make them), `product-ui` (real screenshots), `illustration`, `video`. Leave it out if you
   have none: the draw then avoids compositions that depend on them and the sheet says how to fill
   picture slots honestly (software shows its own interface built in HTML; a product with no photographs
-  is drawn and set among real pictures of its world, never a fake product shot). Pictures you will
-  find in the open collections are not the project's own; leave them out of `--have`.
+  is drawn, never a fake product shot).
 - `--keep palette,type`: when the brand already fixes colours or typefaces. The draw then deals only
   the composition, and you map the brand's values onto the roles.
 
@@ -242,23 +240,12 @@ not finished. Order of work:
 4. **Imagery,** in this order of preference:
    1. the project's own;
    2. generated, if you have an image tool;
-   3. **real pictures of the subject's world from the open collections,** whenever an honest one
-      exists. Search them with `node <skill>/scripts/assets.mjs "<query>"` (Openverse, Wikimedia
-      Commons, the Art Institute of Chicago and the Met; only licences that allow commercial use, by
-      default). Search the inventory, not the category: its street in old postcards, an old map of the
-      neighbourhood, its material up close, its trade in engravings, a museum object of its kind, a
-      botanical plate, a star chart. Use them large and with intent: one archival photograph as the
-      hero, an engraving enlarged into the page's motif, the real map of the street as the contact
-      section. Look at each before choosing; `--get <ref>` downloads it into `assets/` and records
-      its source and licence, and `--credits` prints the credit line for the footer. A found picture
-      shows the world around the client and is never presented as the client's own product, room,
-      dish, person or team;
-   4. **drawn in code from the subject itself,** for what no honest picture exists of (its objects,
+   3. **drawn in code from the subject itself,** for what no honest picture exists of (its objects,
       its tiles, its windows, its product's interface, made as one consistent flat graphic language in
       the palette's real colours);
-   5. the photographs dealt on the sheet, only where an honestly generic picture fits (the sea for a
+   4. the photographs dealt on the sheet, only where an honestly generic picture fits (the sea for a
       sea house), never as a stand-in for the subject;
-   6. type and colour alone.
+   5. type and colour alone.
 
    When the project has footage or a real picture of its own process or product, the first screen
    shows it, large (about 40% of the screen or more). Never write a sentence on the page about where
@@ -270,11 +257,11 @@ not finished. Order of work:
    **The floor, which the inspector checks:** at least four real pictures on the page, usually six to
    twelve (photographs, archival images, maps, engravings, footage, raster artwork; for software, its
    cropped interface fragments count too). SVG drawings do not count toward the floor: draw what no
-   picture exists of, and still carry real pictures. Add one moving picture wherever an honest clip
-   exists: search it with `assets.mjs --video "<query>"` and use it as a muted loop with a poster
-   frame. Models skip pictures and footage because finding them is work; the page fails without them.
+   picture exists of, and still carry real pictures. Add one moving picture wherever the project has
+   an honest clip, as a muted loop with a poster frame. Models skip pictures and footage because
+   finding them is work; the page fails without them.
 
-   `references/imagery.md` covers searching, licences and credits, video, drawing, crops and treatments.
+   `references/imagery.md` covers licences and credits, video, drawing, crops and treatments.
 5. **The live thing** from step 4, built into the section where it proves the claim (often the hero
    or the booking), with real content, a thumb-sized phone version and a plain fallback.
 6. **The scroll scenes,** when the sheet deals them (section 9), each with the section it carries: the page's big
@@ -376,8 +363,8 @@ Do not report until all of these are true; each one was skipped in a test run th
 
 Tell the user, briefly: the direction dealt (name and seed) and any redraws with reasons; the idea
 sentence and the live thing; the final scores from your last critique round and what still falls short;
-every found picture and clip with its title, creator, licence and source page (`assets.mjs --credits` prints
-the list) and where its credit sits on the page; which bundled photographs and which drawings stand in
+every third-party picture and clip with its title, creator, licence and source page, and where its credit
+sits on the page; which bundled photographs and which drawings stand in
 for photography (so they can be replaced); and any sample content that must be swapped before launch.
 Do not claim a check you did not run.
 
@@ -516,8 +503,8 @@ launch. Never fake a payment form.
 **No Chrome or Node 22.** Run `lint.mjs` (Node 18+), take screenshots with whatever browser tool you
 have, and critique those. Say in the report that the inspector could not run.
 
-**No network.** If `assets.mjs` reaches no source, draw the pictures and say in the report that the
-open collections could not be searched.
+**No open-collection search.** This copy makes no network calls, so `assets.mjs` search and `--get`
+are disabled. Use the project's own pictures, draw the rest, or use the dealt photographs.
 
 ## Files
 
@@ -535,7 +522,7 @@ open collections could not be searched.
 | `references/tells.md` | The dated registry of generated-page tells and what each is replaced by. |
 | `references/research.md` | The study: method, numbers, what the best and worst sites do. Cite it, do not guess. |
 | `scripts/draw.mjs` | Deals and reprints the direction; `--photos`, `--site <id>` for more references; `--app` deals an app style instead. |
-| `scripts/assets.mjs` | Step 6: searches open collections for real pictures of the subject's world; `--get` downloads with the credit, `--credits` prints them. |
+| `scripts/assets.mjs` | Disabled in this copy (no network calls); only `--credits` runs, printing credits already in `credits.json`. |
 | `scripts/lint.mjs` · `scripts/inspect.mjs` | The gate. |
 | `scripts/scenes.mjs` | The gate for scroll scenes: each scene at 0-100% of its hold, desktop, phone, reduced motion. |
 | `assets/base.css` · `assets/base.js` | An optional neutral foundation to build on. |
