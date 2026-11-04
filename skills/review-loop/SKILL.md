@@ -16,7 +16,8 @@ A Markdown file per branch under the git directory, never in the scratchpad: `$(
 - `## Snapshots` - one line per round: `R<n>: <tree-sha>`.
 - `## Findings` - one line per finding: `[R<n>-#<id>] <severity> <axis> <class> file:line, file:line - issue → <status>`. `<axis>` is `standards` or `spec`; `<class>` is the short name of the defect kind; the locations are every place the class occurs, comma-separated.
 
-Severities: `must-fix`, `should-fix`, `nit`, `question` (the reviewer needs the author's clarification).
+Severities: `must-fix`, `should-fix`, `nit`, `question` (the reviewer needs the author's clarification), `pre-existing` (the defect sits in code the round's diff did not add or change).
+A defect in code the diff did not add or change is always `pre-existing`, whatever its weight, never `must-fix` or `should-fix`, so a bug the change did not introduce never blocks it.
 A `must-fix` needs evidence - the failing output of a command the reviewer ran, or the quoted standard or spec line the diff breaks; without it the finding is at most `should-fix`.
 
 Axes: every finding sits on one of two axes. **Standards** asks whether the change follows the repo's documented coding standards and the smell baseline in `code-smells.md` (next to this file). **Spec** asks whether the change does what the log's `## Spec` asked. A change can pass one axis and fail the other, so report them apart and never merge or rerank across axes.
@@ -28,7 +29,7 @@ Statuses:
 - `OPEN` - not yet handled.
 - `FIXED` - fixed in a later round; the next reviewer verifies it.
 - `ANSWERED: <answer>` - the main session's reply to a `question`; the next reviewer may raise a new finding from it.
-- `WONTFIX: <reason>` - only for `should-fix` and `nit`; the main session may set it.
+- `WONTFIX: <reason>` - only for `should-fix`, `nit`, and `pre-existing`; the main session may set it.
 - `DISPUTED: <reason>` - the main session's rebuttal of a `must-fix`. The next reviewer rules on it: `ACCEPTED` turns it into `WONTFIX`, `UPHELD` stops the loop for the human.
 
 ## Handoff
@@ -79,7 +80,7 @@ At most **3 rounds, gate included**. Every round follows the `pr-review` checkli
 1. **Round 1 - full review** of `<merge-base>..<snapshot>`, using the reviewer prompt below.
 2. **Later rounds - incremental**: verify every `FIXED`, `ANSWERED`, and `DISPUTED` item, then review only the diff since the previous reviewed snapshot.
 
-Between rounds the main session handles every `OPEN` item: fix it (`FIXED`), answer it (`ANSWERED`), or record `WONTFIX` / `DISPUTED` with a reason. Outside delegate mode the main session fixes every item inline. Run the pre-review checks (above) before the next snapshot. `should-fix`, `nit`, and `question` alone never trigger another round.
+Between rounds the main session handles every `OPEN` item: fix it (`FIXED`), answer it (`ANSWERED`), or record `WONTFIX` / `DISPUTED` with a reason. Outside delegate mode the main session fixes every item inline. Run the pre-review checks (above) before the next snapshot. `should-fix`, `nit`, `question`, and `pre-existing` alone never trigger another round.
 
 **Commit before the round you expect to pass.** The gate reviews the committed `HEAD`, so uncommitted work is outside it. Commit all work before that round - the Git rules in `CLAUDE.md` (protected branches, PR size, commit format) apply, and committing needs the user's go-ahead. A clean round 1 on a committed `HEAD` passes in one round.
 
@@ -118,7 +119,7 @@ The user approves EACH entry or rule before it is written; an unapproved one is 
 
 ## pr-review checklist
 
-Resolve the `pr-review` skill once: the repo's `.claude/skills/pr-review/SKILL.md`, else the global `~/.claude/skills/pr-review/SKILL.md` (read-only reference). Its path goes into every round's prompt, with the instruction to read it and walk its checklist and severity scale over that round's scope, skipping step 5 (the marker; the main session writes it). Log each `pr-review` finding (one per class, as above) with axis `spec` when it quotes the spec, otherwise `standards`. Severity maps both ways: `must-fix` = 🔴 Blocker, `should-fix` / `nit` = 🟡 Nit, `question` = 💬 Question. A multi-location finding stays one item in that skill's output: one line per finding, with its locations comma-separated where the template shows `[file:line]` (`[a.ts:10, b.ts:42]`), and the class named in the issue text. With no `pr-review` skill, rounds use the two axes below alone and there is no marker or `## Self-review` block.
+Resolve the `pr-review` skill once: the repo's `.claude/skills/pr-review/SKILL.md`, else the global `~/.claude/skills/pr-review/SKILL.md` (read-only reference). Its path goes into every round's prompt, with the instruction to read it and walk its checklist and severity scale over that round's scope, skipping step 5 (the marker; the main session writes it). Log each `pr-review` finding (one per class, as above) with axis `spec` when it quotes the spec, otherwise `standards`. Severity maps both ways: `must-fix` = 🔴 Blocker, `should-fix` / `nit` / `pre-existing` = 🟡 Nit, `question` = 💬 Question. A multi-location finding stays one item in that skill's output: one line per finding, with its locations comma-separated where the template shows `[file:line]` (`[a.ts:10, b.ts:42]`), and the class named in the issue text. With no `pr-review` skill, rounds use the two axes below alone and there is no marker or `## Self-review` block.
 
 ## Before push
 
@@ -142,6 +143,7 @@ Re-raise a WONTFIX item (any location of its class) only with a reason the log d
 Checks are green (see the Checks block at the end of this prompt). Do not re-run them unless a finding needs evidence the block lacks or the block predates the snapshot; attach that output to the finding it backs.
 Batch reads and commands into as few tool calls as you can.
 A must-fix needs evidence: failing output you ran, or the quoted standard or spec line it breaks. Without it, report should-fix at most.
+A defect in code this round's scope did not add or change is `pre-existing`, never must-fix or should-fix.
 
 ## Two axes
 Review along two separate axes and tag every finding with its `axis`.
@@ -154,7 +156,7 @@ Review along two separate axes and tag every finding with its `axis`.
 JSON only:
 {
   "verdicts": [{"id": "R<n>-#<id>", "verdict": "VERIFIED | NOT_FIXED | ACCEPTED | UPHELD", "reason": "..."}],
-  "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question", "axis": "standards | spec", "class": "<short name of the defect kind>", "locations": [{"file": "...", "line": 0}], "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
+  "findings": [{"id": "R<n>-#<id>", "severity": "must-fix | should-fix | nit | question | pre-existing", "axis": "standards | spec", "class": "<short name of the defect kind>", "locations": [{"file": "...", "line": 0}], "issue": "...", "suggestion": "...", "evidence": "test/lint output or null"}],
   "review_summary": "<pr-review ## Review Summary and ## Self-review block, only when Gate candidate is yes and the round is clean; otherwise null>",
   "needs_human_review": "<one Markdown block, in the layout agents/reviewer.md defines>"
 }
