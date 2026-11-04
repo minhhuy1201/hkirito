@@ -80,7 +80,7 @@ At most **3 rounds, gate included**. Every round follows the `pr-review` checkli
 1. **Round 1 - full review** of `<merge-base>..<snapshot>`, using the reviewer prompt below.
 2. **Later rounds - incremental**: verify every `FIXED`, `ANSWERED`, and `DISPUTED` item, then review only the diff since the previous reviewed snapshot.
 
-Between rounds the main session handles every `OPEN` item: fix it (`FIXED`), answer it (`ANSWERED`), or record `WONTFIX` / `DISPUTED` with a reason. Outside delegate mode the main session fixes every item inline. Run the pre-review checks (above) before the next snapshot. `should-fix`, `nit`, and `question` alone never trigger another round.
+Between rounds the main session handles every `OPEN` item: fix it (`FIXED`), answer it (`ANSWERED`), or record `WONTFIX` / `DISPUTED` with a reason. Outside delegate mode the main session fixes every item inline. Run the pre-review checks (above) before the next snapshot. `should-fix`, `nit`, `question`, and `pre-existing` alone never trigger another round.
 
 **Commit before the round you expect to pass.** The gate reviews the committed `HEAD`, so uncommitted work is outside it. Commit all work before that round - the Git rules in `CLAUDE.md` (protected branches, PR size, commit format) apply, and committing needs the user's go-ahead. A clean round 1 on a committed `HEAD` passes in one round.
 
