@@ -2,7 +2,7 @@
 
 # Smell baseline
 
-A fixed set of Fowler code smells (_Refactoring_, ch.3) for the **Standards** axis. It applies even when a repo documents no standards. Two rules bind it:
+A fixed set of Fowler code smells (_Refactoring_, ch.3), plus three test smells, for the **Standards** axis. It applies even when a repo documents no standards. Two rules bind it:
 
 - **The repo overrides.** A documented repo standard always wins. Where it endorses something the baseline would flag, suppress the smell.
 - **Always a judgement call.** Label each hit a heuristic ("possible Feature Envy"), never a hard violation. Skip anything tooling already enforces.
@@ -21,3 +21,11 @@ Each smell reads _what it is_ then _how to fix_. Match it against the diff.
 - **Message Chains**: long `a.b().c().d()` navigation the caller should not depend on. Hide the walk behind one method on the first object.
 - **Middle Man**: a class or function that mostly delegates onward. Cut it and call the real target directly.
 - **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. Drop the inheritance and use composition.
+
+## Test smells
+
+Match these when the diff adds or changes tests. A test with one of them can pass whatever the code does.
+
+- **Mocked Subject**: the test mocks the module under test or its internal collaborators. Mock only at system boundaries (network, clock, filesystem) and assert on the real output.
+- **Tautological Assertion**: the expected value is computed the way the code computes it, or the test asserts on the mock's own return value. Hard-code the expected value from the spec or a worked example.
+- **Happy Path Only**: the new tests cover only the success case while the change adds a branch for empty, null, boundary, or error input. Add one test per new branch.
