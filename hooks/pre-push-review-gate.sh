@@ -68,7 +68,7 @@ HEAD_MOVING = {"commit", "merge", "rebase", "reset", "cherry-pick", "revert", "a
 def git_subcommand(toks):
     gi = next((i for i, t in enumerate(toks) if t.rsplit("/", 1)[-1] == "git"), None)
     if gi is None:
-        return None
+        return None, []
     j = gi + 1
     while j < len(toks):
         t = toks[j]
@@ -76,9 +76,39 @@ def git_subcommand(toks):
             j += 2; continue
         if t.startswith("-"):
             j += 1; continue
-        return t  # first non-option token is the git subcommand
-    return None
-subcommands = [git_subcommand(toks) for toks in command_segments(cmd)]
+        return t, toks[j + 1:]  # first non-option token is the git subcommand
+    return None, []
+PUSH_OPTS_WITH_ARG = {"--repo", "-o", "--push-option", "--receive-pack", "--exec"}
+# Flags that can send refs beyond the ones named on the command line.
+PUSH_BULK_FLAGS = {"--all", "--branches", "--mirror", "--tags", "--prune"}
+def is_delete_only_push(args):
+    # A push that only deletes remote branches sends no commits, so it needs no review.
+    # Anything unrecognised falls through to the gate.
+    flags, positionals = set(), []
+    i = 0
+    while i < len(args):
+        t = args[i]
+        if t in PUSH_OPTS_WITH_ARG:
+            i += 2; continue
+        if t.startswith("-"):
+            flags.add(t.split("=", 1)[0])
+        else:
+            positionals.append(t)
+        i += 1
+    if flags & PUSH_BULK_FLAGS:
+        return False
+    refspecs = positionals[1:]  # the first positional is the remote
+    if not refspecs:
+        return False
+    if flags & {"--delete", "-d"}:
+        return True
+    return all(r.startswith(":") and len(r) > 1 for r in refspecs)
+subcommands = []
+for toks in command_segments(cmd):
+    sub, args = git_subcommand(toks)
+    if sub == "push" and is_delete_only_push(args):
+        sub = "push-delete"
+    subcommands.append(sub)
 if "push" not in subcommands:
     print("")
     sys.exit(0)
