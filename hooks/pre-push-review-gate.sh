@@ -60,7 +60,7 @@ def command_segments(command):
         return [tokenize(s) for s in re.split(r"\|\||&&|;|\||\n|&", command)]
     segments = [[]]
     for t in tokens:
-        if set(t) <= OPERATOR_CHARS:
+        if t and set(t) <= OPERATOR_CHARS:
             segments.append([])
         else:
             segments[-1].append(t)
@@ -89,9 +89,13 @@ def is_delete_only_push(args):
     i = 0
     while i < len(args):
         t = args[i]
-        if set(t) <= set("<>&"):
-            # Redirection such as `2>&1` or `> out`: drop the fd before it and the target after it.
-            if positionals and positionals[-1].isdigit() and i > 0 and args[i - 1] == positionals[-1]:
+        if t and set(t) <= set("<>&"):
+            # Redirection such as `2>&1` or `> out`: drop the target after it, and the fd
+            # before it only when the raw command writes them joined - `2 > out` passes `2`
+            # to git as a refspec, and shlex drops that whitespace.
+            fd = args[i - 1] if i > 0 else ""
+            if fd.isdigit() and positionals and positionals[-1] == fd \
+                    and re.search(r"(^|\s)" + re.escape(fd + t), cmd):
                 positionals.pop()
             i += 2; continue
         if t in PUSH_OPTS_WITH_ARG:
