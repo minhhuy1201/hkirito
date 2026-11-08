@@ -51,6 +51,8 @@ expect 2 'git push --delete origin > /tmp/out'
 expect 2 'git push origin 2>&1'
 expect 2 "git push origin :feat/x '' main"
 expect 2 'git push origin :feat/x 2 > /dev/null'
+expect 2 'git push origin :feat/x 2 > /dev/null 2>&1'
+expect 2 'git push origin :feat/x 2 > /dev/null; ls 2>/dev/null'
 expect 2 'git push origin --delete feat/x && git push origin main'
 expect 2 'git commit -m wip && git push'
 

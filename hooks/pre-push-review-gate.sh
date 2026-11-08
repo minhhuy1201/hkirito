@@ -90,13 +90,7 @@ def is_delete_only_push(args):
     while i < len(args):
         t = args[i]
         if t and set(t) <= set("<>&"):
-            # Redirection such as `2>&1` or `> out`: drop the target after it, and the fd
-            # before it only when the raw command writes them joined - `2 > out` passes `2`
-            # to git as a refspec, and shlex drops that whitespace.
-            fd = args[i - 1] if i > 0 else ""
-            if fd.isdigit() and positionals and positionals[-1] == fd \
-                    and re.search(r"(^|\s)" + re.escape(fd + t), cmd):
-                positionals.pop()
+            # Redirection such as `> out` or `>&1`: skip the target after it.
             i += 2; continue
         if t in PUSH_OPTS_WITH_ARG:
             i += 2; continue
@@ -114,7 +108,9 @@ def is_delete_only_push(args):
         return True
     return all(r.startswith(":") and len(r) > 1 for r in refspecs)
 subcommands = []
-for toks in command_segments(cmd):
+# Drop fds written joined to a redirect (`2>&1`) before lexing; shlex loses that
+# whitespace, and in `2 > out` the `2` is an argument git receives.
+for toks in command_segments(re.sub(r"(^|\s)\d+(?=[<>])", r"\1", cmd)):
     sub, args = git_subcommand(toks)
     if sub == "push" and is_delete_only_push(args):
         sub = "push-delete"
