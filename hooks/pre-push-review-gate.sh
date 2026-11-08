@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse gate: block `git push` until a pr-review approval marker matching
-# the current HEAD commit has been recorded.
+# the current HEAD commit has been recorded. Pushes that only delete remote
+# branches send no commits and are let through.
 #
 # Wiring: registered as a PreToolUse hook (matcher "Bash") in ~/.claude/settings.json or the project's .claude/settings.json (see hooks/settings-snippet-push-gate.json).
 # Approval marker: .claude/.pr-review-passed (one line: the reviewed HEAD SHA),
@@ -88,6 +89,11 @@ def is_delete_only_push(args):
     i = 0
     while i < len(args):
         t = args[i]
+        if set(t) <= set("<>&"):
+            # Redirection such as `2>&1` or `> out`: drop the fd before it and the target after it.
+            if positionals and positionals[-1].isdigit() and i > 0 and args[i - 1] == positionals[-1]:
+                positionals.pop()
+            i += 2; continue
         if t in PUSH_OPTS_WITH_ARG:
             i += 2; continue
         if t.startswith("-"):
