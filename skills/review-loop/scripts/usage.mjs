@@ -11,7 +11,7 @@ const TTL_MS = { w5: 5 * 60_000, w1: 60 * 60_000 };
 function readMultiplier(model) {
   const name = String(model ?? "");
   if (name.includes("opus-5-5") || name.includes("sonnet-5-5")) return 0.05;
-  if (name.includes("fable-5-1") || name.includes("mythos-5-1")) return 0.025;
+  if (name.includes("fable-5-1") || name.includes("fable-5-2") || name.includes("mythos-5-1")) return 0.025;
   return 0.1;
 }
 
