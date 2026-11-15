@@ -131,6 +131,14 @@ test("hit is - when a line has no input tokens", () => {
   assert.match(run([empty]), /calls=1 write=0 read=0 hit=- out=5/);
 });
 
+test("fable 5.2 cache reads count at 0.025x", () => {
+  const fable = buildSession("fable", {
+    main: [assistant("f1", "2026-01-05T10:00:00Z", "claude-fable-5-2", usage({ read: 100000 }))],
+    subagents: [],
+  });
+  assert.match(run([fable]), /claude-fable-5-2: calls=1 write=0 read=100\.0K hit=100\.0% out=0 eq=2\.5K/);
+});
+
 test("prints no cross-model total and no dollar amounts", () => {
   const out = run([dir()]);
   assert.doesNotMatch(out, /\$/);

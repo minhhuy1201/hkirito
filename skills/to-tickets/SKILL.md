@@ -43,7 +43,7 @@ Present the proposed breakdown as a numbered list. For each ticket, show:
 
 - **Title**: short descriptive name
 - **Blocked by**: which other tickets (if any) must complete first
-- **Model**: `haiku` or `sonnet`, with its one-line reason (see "Choose the model" below)
+- **Model**: `haiku`, `sonnet`, or `opus`, with its one-line reason (see "Choose the model" below)
 - **What it delivers**: the end-to-end behaviour this ticket makes work
 
 Ask the user:
@@ -63,13 +63,20 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 
 ### Choose the model
 
-Every ticket gets a `**Model:**` line placed after `Blocked by`, naming the model that implements it in delegate mode. A ticket is `haiku` only when all three hold:
+Every ticket gets a `**Model:**` line placed after `Blocked by`, naming the model that implements it in delegate mode. Check in this order; the first match wins.
+
+A ticket is `opus` when either holds, because a clear spec does not make these changes easy:
+
+- it migrates a schema, stored data, or a wire format that existing data or other callers depend on;
+- one of its acceptance criteria is a measured performance target.
+
+A ticket is `haiku` only when all three hold:
 
 - it touches at most 2 files;
 - it follows a pattern that already exists in the repo, and the ticket NAMES that pattern;
 - it adds no business logic, branching rule, or interface change.
 
-Anything else is `sonnet`. The reason is one line saying which condition decided it. The user's edit at step 4 overrides your choice.
+Anything else is `sonnet`. The reason is one line saying which condition decided it. Opus costs twice Sonnet per token, so an `opus` reason names the migration or the performance target. The user's edit at step 4 overrides your choice.
 
 <ticket-template>
 
@@ -79,7 +86,7 @@ Anything else is `sonnet`. The reason is one line saying which condition decided
 
 **Blocked by:** the numbers/titles of the tickets that gate this one, or "None (can start immediately)".
 
-**Model:** haiku|sonnet - <one-line reason>
+**Model:** haiku|sonnet|opus - <one-line reason>
 
 **Status:** todo
 
