@@ -48,7 +48,8 @@ then keep working.
   `implementer` subagent while the main session runs Sonnet 5.5; later spec or plan work starts a
   new Opus session. `implementer` defaults to Sonnet in
   `agents/implementer.md`; a ticket tagged `Model: haiku` runs on Haiku 5.5 and escalates to Sonnet
-  after two failed checks or a `must-fix`. `reviewer` stays Opus 5.5, medium effort, pinned - never a
+  after two failed checks or a `must-fix`; a ticket tagged `Model: opus` (a migration, or a measured
+  performance target) runs on Opus 5.5. `reviewer` stays Opus 5.5, medium effort, pinned - never a
   `model` override. This repo copy is the reference; the author syncs it into `~/.claude/CLAUDE.md`
   by hand.
 - **Specs and plans live in the repo** - write them into the project's docs folder (e.g.
