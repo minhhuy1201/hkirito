@@ -11,7 +11,7 @@ Spec: [cheaper-review-loop](../../specs/cheaper-review-loop.md)
 - [x] Accepts a session `.jsonl` file or a session directory, several at once, or none (latest session of the current project)
 - [x] Deduplicates assistant messages by message id before summing `usage`
 - [x] Classifies subagents by `agentType` from their meta file
-- [x] Applies 1.25x for 5-minute writes, 2x for 1-hour writes, cache read 0.05x for Opus 5.5 / Sonnet 5.5, 0.025x for Fable 5.1 / Mythos 5.1, 0.1x otherwise
+- [x] Applies 1.25x for 5-minute writes, 2x for 1-hour writes, cache read 0.05x for Opus 5.5 / Sonnet 5.5, 0.025x for Fable 5.1 / Fable 5.2 / Mythos 5.1, 0.1x otherwise
 - [x] Flags cache rewrites after idle gaps longer than the TTL of the write
 - [x] Prints no cross-model total and no dollar amounts
 - [x] `node:test` suite drives the CLI on synthetic fixtures built in a temp dir (main + reviewer + implementer, duplicated message id, idle-gap rewrite, 1-hour write, unknown model) and passes
