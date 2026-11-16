@@ -18,6 +18,7 @@ Skills and output styles in this repo are copied from, or adapted from, the proj
 - Used in: `unslop` (copied), `how`, `why`, `explain` (renamed from `teach`), `architect` (ported to run inline, without the multi-model arena), and the comment keep-list in `tidy`
 - Added at commit `9580c23`: `sharpen`, `correct`, `statechart` (with its scripts and tests), `create-formal-verification-skill`, `maintain-formal-verification-skill` (all copied), `blast-radius` (ported to run inline, without the multi-model arena), `interrogate` (ported, then re-ported at `ab1f702`, see below), `show-me-your-work` (ported: no transcript audit, one fresh `reviewer` for the independent review)
 - Re-ported at commit `ab1f702`: `interrogate` (one fresh worktree adversary, findings proven by a run, references removed)
+- Synced at commit `bf0c7cd8`: `sharpen` (its last line now asks for prototypes of choices an experiment can settle)
 - Ideas from `ab1f702`: restate the goal (`poteto-mode`) in `kirito-mode`, must-fix needs evidence (Autopilot playbooks) in `review-loop`, write the decision before measuring (`principle-explain-the-number`) in the `bug` route
 
 ## tt-a1i/archify
@@ -28,6 +29,7 @@ Skills and output styles in this repo are copied from, or adapted from, the proj
 - License: Apache-2.0, full text in `skills/flow-map/LICENSE`
 - Used in: `flow-map` (ported). The method only: its Type router and Mermaid input (`archify/SKILL.md`), `references/repository-authoring.md`, and the Composition and meaning and Dataflow lineage parts of `references/authoring-defaults.md`, condensed and rewritten for Mermaid output. No code, schema, example, viewer, or CLI was taken. The UI journey view is an hkirito addition.
 - Used in: `archify` (vendored). The `archify/` package copied at the same commit, with its own `LICENSE`, `NOTICE`, and `THIRD_PARTY_NOTICES.md`. Changes: the update check is always off (`scripts/check-update.mjs`, `bin/delivery-update.mjs`), remote brand capture returns unavailable and the CLI and diagnostics no longer point to it (`renderers/shared/brand-marks.mjs`, `bin/archify.mjs`, `references/brand-marks.md`, `references/authoring-defaults.md`, `schemas/README.md`, `brand-marks/README.md`), `references/update-awareness.md` and the rendered demo HTML under `examples/` are removed, and `SKILL.md` is user-invoked only, with the update notice and the proactive explainer modes removed (also in `references/explainer-authoring.md`).
+- Synced at commit `7e45f36c` (in `a7ed6fd6`): `scripts/check-render-output.mjs` waits for the Explainer receipt to flush before it exits, so piped output is not cut short on macOS
 
 ## JuliusBrussee/caveman
 
