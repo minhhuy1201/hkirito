@@ -8,7 +8,7 @@ Decisions already made in chat:
 - Specs, plans, and skills live in the repo `~/personal/hkirito` (currently not a git repo).
 - Borrowed skills are vendored (copied, adapted, provenance header kept).
 - Superpowers plugin gets disabled.
-- Pre-commit cleanup = new inline skill `tidy` (no subagent, output only `done`). Commit messages stay with `caveman:caveman-commit`.
+- Pre-commit cleanup = new inline skill `tidy` (no subagent, output `done` plus any constraint-encoding offers). Commit messages stay with `caveman:caveman-commit`.
 - `review-loop` runs only when a PR is opened, not after every implementation.
 - Company machine blocks Claude hooks (mods); git hooks are allowed. Enforcement therefore has 3 layers, and the skill layer must work alone.
 
