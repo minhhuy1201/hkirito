@@ -18,6 +18,7 @@ Skills and output styles in this repo are copied from, or adapted from, the proj
 - Used in: `unslop` (copied), `how`, `why`, `explain` (renamed from `teach`), `architect` (ported to run inline, without the multi-model arena), and the comment keep-list in `tidy`
 - Added at commit `9580c23`: `sharpen`, `correct`, `statechart` (with its scripts and tests), `create-formal-verification-skill`, `maintain-formal-verification-skill` (all copied), `blast-radius` (ported to run inline, without the multi-model arena), `interrogate` (ported, then re-ported at `ab1f702`, see below), `show-me-your-work` (ported: no transcript audit, one fresh `reviewer` for the independent review)
 - Re-ported at commit `ab1f702`: `interrogate` (one fresh worktree adversary, findings proven by a run, references removed)
+- Idea from `93b916d4`: offer to encode constraint comments as a type, assert, test, or lint rule (`no-comments`) in `tidy`
 - Synced at commit `bf0c7cd8`: `sharpen` (its last line now asks for prototypes of choices an experiment can settle)
 - Ideas from `ab1f702`: restate the goal (`poteto-mode`) in `kirito-mode`, must-fix needs evidence (Autopilot playbooks) in `review-loop`, write the decision before measuring (`principle-explain-the-number`) in the `bug` route
 
