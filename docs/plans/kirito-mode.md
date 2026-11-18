@@ -72,7 +72,7 @@ pstack (port, add provenance header):
 - `teach` -> renamed `explain` (runs `how` + `why`); Matt `teach` kept as `learn`.
 - `architect`: lite - ground with `how`, sketch 2 distinct shapes inline, compare on interface depth per `codebase-design`, write sketch, no `arena`.
 
-New `tidy`: scope = staged diff; delete comments that restate code, keep why/constraint/license/public-API-doc comments (rules from `pstack/agents/comment-sicko.md` keep-list), apply `unslop` to remaining comments/docstrings; re-stage; run `scripts/mark.sh` (writes `sha256(git diff --cached)` to `$(git rev-parse --git-dir)/kirito-tidy`); print only `done`.
+New `tidy`: scope = staged diff; delete comments that restate code, keep why/constraint/license/public-API-doc comments (rules from `pstack/agents/comment-sicko.md` keep-list), keep constraint comments (`do not remove`, `talk to X before changing`) and offer to encode each one we own as a type, assert, test, or lint rule (idea from `pstack/skills/no-comments`), without blocking; apply `unslop` to remaining comments/docstrings; re-stage; run `scripts/mark.sh` (writes `sha256(git diff --cached)` to `$(git rev-parse --git-dir)/kirito-tidy`); print `done` plus one line per encoding offer.
 
 Own skills moved in for teammates: `review-loop`, `pr-sketch`, `agents/reviewer.md` from `~/.claude/` (the home copies become symlinks back to the repo).
 

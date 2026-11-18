@@ -56,7 +56,7 @@ In this order, and do not skip a step because no hook enforces it:
 
 1. Checks green: tests, typecheck, lint.
 2. Spec, plan, and code agree.
-3. Stage the change, then run `tidy`. It prints `done`.
+3. Stage the change, then run `tidy`. It prints `done`, plus any offers to encode a constraint comment. Relay the offers to the user; they do not block the commit.
 4. Check the branch with `git rev-parse --abbrev-ref HEAD`. On `main`, `master`, `develop`, or `dev`, propose a branch name `<type>/<kebab-description>` and switch before committing.
 5. Commit with `caveman:caveman-commit` when available, otherwise a Conventional Commits message: `<type>(<scope>): <description>`, lowercase, imperative, at most 72 characters.
 
