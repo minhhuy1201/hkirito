@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Implements one approved ticket from docs/plans/. Dispatch only in delegate mode - the user passed `/kirito-mode --delegate` or asked for `implementer` by name; otherwise implement inline.
+description: Implements one approved ticket file from the project's plans folder. Dispatch only in delegate mode - the user passed `/kirito-mode --delegate` or asked for `implementer` by name; otherwise implement inline.
 model: claude-sonnet-5-5
 effort: medium
 disallowedTools: Monitor
