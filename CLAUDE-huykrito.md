@@ -39,19 +39,14 @@ then keep working.
   structure or interfaces across more than one file; read-only exploration catches design mistakes
   before they reach disk.
 - **Model routing** - specs and plans: Opus 5.5; implementation and the `pr` route (handoff, review
-  loop, relay, fixes): Sonnet 5.5 in the main session; both medium effort. The prompt cache is per model,
-  so a mid-context `/model` switch re-bills the whole context uncached: switch only at a cleared
-  boundary - write the handoff, stop, and ask the user to `/clear`, `/model <x>`, then resume. A
-  session that starts on the wrong model asks for the switch before its first line, while the context
-  is empty. The choice is theirs, the session only asks. Delegate mode (only the user turns it on:
+  loop, relay, fixes): Sonnet 5.5 in the main session; both medium effort. The prompt cache is per
+  model, so switch only at a cleared boundary: write the handoff, stop, and ask the user to `/clear`,
+  `/model <x>`, then resume; a session that starts on the wrong model asks before its first line. The
+  choice is theirs, the session only asks. Delegate mode (only the user turns it on:
   `/kirito-mode --delegate`, or asking for `implementer` by name) hands each ticket to a fresh
-  `implementer` subagent while the main session runs Sonnet 5.5; later spec or plan work starts a
-  new Opus session. `implementer` defaults to Sonnet in
-  `agents/implementer.md`; a ticket tagged `Model: haiku` runs on Haiku 5.5 and escalates to Sonnet
-  after two failed checks or a `must-fix`; a ticket tagged `Model: opus` (a migration, or a measured
-  performance target) runs on Opus 5.5. `reviewer` stays Opus 5.5, medium effort, pinned - never a
-  `model` override. This repo copy is the reference; the author syncs it into `~/.claude/CLAUDE.md`
-  by hand.
+  `implementer` on the model its `Model:` tag names - `to-tickets` sets the tag, the `kirito-mode`
+  `feature` route owns escalation. `reviewer` stays Opus 5.5, medium effort, pinned - never a `model`
+  override.
 - **Specs and plans live in the repo** - write them into the project's docs folder (e.g.
   `docs/specs/`, `docs/plans/`) and ship them in the PR; the plan-mode file
   under `~/.claude/plans/` is scratch. The next reader of the PR sees only what the repo holds.
