@@ -107,7 +107,8 @@ function stageToolbar(toolbar, locale, labels, switchable) {
 }
 
 // CLI output uses a single switchable SVG. Fixed-theme SVG pairs remain supported.
-export function buildStoryStageHtml({ plan, stageSvg, lightSvg, darkSvg, defaultTheme = 'light', preset = 'classic', styles = loadViewerStyles() }) {
+// hkirito vendor: the upstream Star and Feedback footer is off unless a caller opts in.
+export function buildStoryStageHtml({ plan, stageSvg, lightSvg, darkSvg, defaultTheme = 'light', preset = 'classic', styles = loadViewerStyles(), feedbackLinks = false }) {
   const { containerCode, runtimeCode } = loadStageRuntimeAssets();
   const title = plan.title || 'Archify Story Stage';
   const isZh = (plan.locale || '').toLowerCase().startsWith('zh');
@@ -261,7 +262,7 @@ ${toolbar.css}
   </section>
   <nav class="steps" aria-label="Story steps">${stepButtons}</nav>
   <p class="hint" id="stage-status">${labels.hint}</p>
-  <footer class="stage-feedback" aria-label="${labels.feedbackLabel}">
+  ${feedbackLinks ? `<footer class="stage-feedback" aria-label="${labels.feedbackLabel}">
     <a class="stage-feedback-brand" href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener noreferrer"><span class="stage-feedback-mark" aria-hidden="true"></span><span class="stage-feedback-words"><span class="stage-feedback-name">Archify</span><span class="stage-feedback-tagline">${labels.feedbackTagline}</span></span></a>
     <span class="stage-star-wrap"><a class="stage-star" href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener noreferrer" aria-label="${labels.feedbackStarLabel}" aria-describedby="stage-star-tip"><span class="stage-gh" aria-hidden="true"></span><span class="stage-star-prompt">${labels.feedbackStarPrompt}</span><span class="stage-star-pill"><span class="stage-star-icon" aria-hidden="true"></span><span>${labels.feedbackStar}</span><span class="stage-star-arrow" aria-hidden="true">&#8599;</span></span></a><span class="stage-star-tip" id="stage-star-tip" role="tooltip"><strong>${labels.feedbackStarTitle}</strong><span>${labels.feedbackStarBody}</span></span></span>
     <details class="stage-feedback-menu" data-feedback-menu>
@@ -273,7 +274,7 @@ ${toolbar.css}
         <button class="stage-feedback-item stage-feedback-copy" type="button" role="menuitem" data-copy-email="2801884530@qq.com" data-copied-text="${labels.feedbackCopied}"><span class="stage-feedback-item-icon" data-icon="copy" aria-hidden="true"></span><span class="stage-feedback-item-copy"><strong data-copy-label>${labels.feedbackCopyEmail}</strong></span></button>
       </div>
     </details>
-  </footer>
+  </footer>` : ''}
 </main>
 <script type="application/json" id="story-stage-meta">${meta}</script>
 <script>${containerCode}</script>

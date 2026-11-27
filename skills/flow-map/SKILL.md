@@ -37,7 +37,7 @@ Repository mode only. The source is the authority; a README, a package descripti
 4. **Follow what runs.** Trace real branches, retries, fallbacks, and error paths. Code that is exported or configured but never called on the normal path is optional: leave it off the runtime path, or show it dashed and labelled `optional`. For a state change or a permission, trace to the actual write or check and the condition that guards it; an upstream caller alone does not prove the condition. Four cases need more than that:
    - **Dispatcher.** Follow every supported branch, not only the default. When branches run in different places or reach the outside through different components, draw where each one runs. Label an optional branch with the condition that enables it.
    - **Round trip.** Trace the request and the response as two separate edges, including a return that passes back through a relay.
-   - **State transition.** Read the branch that assigns the next state. An error shown to the user can accompany an ordinary transition, so an error label alone is not a state.
+   - **State transition.** Take the next state from the code that sets it. A user-facing error often comes with a normal transition, so do not draw the message as its own state.
    - **Shortcut or fallback.** Read the whole condition at the call site and keep every clause whose absence would change which path runs.
 5. **Record evidence while reading.** Read with line numbers (`nl -ba <file> | sed -n '40,90p'`) and copy start and end lines from what you see. Keep each fact with its location as you go.
 6. **Name uncertainty.** Resolve an open question by reading the next relevant range, or keep it as an unknown on the diagram (see Compose). Never turn a name into an unobserved behaviour.
