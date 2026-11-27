@@ -104,6 +104,16 @@ then keep working.
   trust store; editing a shell profile or launch agent), name the change and hand over the command.
   Side effects count - `next dev --experimental-https` installs a root CA. An admin-password prompt is
   the tell: stop and report it rather than retry.
+- **[guardrail] No package installs without asking** - fires before installing, fetching, or running any
+  package or tool not already in the project: `uvx`, `pipx`, `pip install`, `npx -y` or `npx <pkg>`
+  not in `node_modules/.bin`, `npm i <pkg>` or `-g`, `brew install`, `cargo`/`go`/`gem install`, and
+  any substitute installer. A missing tool is a reason to stop and ask, never to fetch one. Non-fork
+  subagents load this file; the built-in Explore, Plan, and web-fetch agents skip it. Every Explore and
+  Plan brief carries this line verbatim: "Do not install, fetch, or run any package or tool not already
+  in the project (uvx, pipx, pip install, npx -y, npm i, brew install...). If you need one, stop and
+  report the exact command and why." The optional `SubagentStart` hook (`hooks/subagent-rules.sh`)
+  injects it for them. `ask` rules in `~/.claude/settings.json` back this up, but they match command
+  text only and miss bare `npx <pkg>`.
 - **Business figures stay in chat** - real revenue, budget, forecast, rate, or client-level numbers
   (from BigQuery, a screenshot, or the user's queries) go only in chat. Commits, PR bodies and
   comments, code comments, test data, specs, plans, and docs get a qualitative description ("higher

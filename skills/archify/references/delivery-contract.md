@@ -4,6 +4,27 @@
 
 `finalize` stops at the first non-passing gate. Use compact stdout or `evidence.summaryReceipt`; read its full sidecar only when the summary lacks evidence needed for a coherent repair. A receipt with four artifact checks is basic validation, not showcase acceptance: require all nine checks, zero composition errors, and zero warnings. Fix `meta.quality_profile` and schema errors before geometry. A dense full-schema ERD may keep `standard` for its first complete-field pass: require zero structural errors, no edge-through-node failures, complete field rows, and a readable grouped grid, and record composition warnings instead of spending unbounded time on them.
 
+When every diagnostic from the first embedded validation is
+`repository-evidence/line-out-of-range`, `finalize` may narrow an existing
+citation's `end_line` to the last line of its pinned file and retry the complete
+gates once. The start line must already exist in that nonempty file; the source
+path, revision, start, and all other authored content stay unchanged. Automatic
+repair requires the original bytes to match `JSON.stringify(parsed, null, 2)`
+plus one LF exactly. Other formatting, a BOM, CRLF, or number spellings that
+would change on parsing and serialization require author repair, so reserialization
+cannot change unrelated bytes or numeric precision. Missing files, invalid starts,
+and mixed failures also require author repair. This only bounds
+the cited range; it does not establish or correct the cited fact. `autoRepair`
+records the changed ranges and original/repaired hashes in both receipts. A
+passing retry keeps the repaired candidate. Any later failure or exception
+attempts a byte-for-byte restore, guarded by the repaired candidate's identity
+and bytes, and invalidates only that retry's current-delivery sidecar. External
+edits are preserved and a returned receipt reports `restore-failed` if recovery
+cannot safely complete. Failure diagnostics and `specification` describe the
+checked retry; `autoRepair.outcome` states whether the original was restored.
+Thrown exceptions remain command failures and may leave the last persisted
+receipt at an earlier stage; only a completed passing command is a handoff.
+
 For a validation failure, edit the existing JSON in the connected neighborhood named by diagnostics before rerunning a command. Preserve requested semantics, meaningful labels, source evidence, and fixed or agreed topology. Several routes sharing nodes call for one placement repair; read [Architecture layout repair](architecture-layout-repair.md) for that case. Reflow a blocked main path rather than nudging unrelated labels. Keep unrelated geometry when its composition already reads clearly. Use `--layout-json` before editing only when compact evidence lacks needed measurements. Workflow v2 uses its stable compiler receipt, not solver internals, as authoring evidence.
 
 Keep the best candidate that cleared route checks before a viewport repair. If that repair introduces new route collisions, restore the measured layout and address its remaining canvas or text constraint.
@@ -22,6 +43,8 @@ their existing rule codes. Use the advertised `validate --json` or
 `deliver --json` interface for a machine receipt; `render` has no `--json` flag.
 Unexpected implementation failures retain debugging information in human
 mode and remain `internal/unclassified` in machine receipts.
+
+Declared local Explainer chart data and native-diagram specification files are protected inputs, including physical aliases. Delivery and finalize refuse sidecars that would overwrite those inputs, including when resource preparation fails; an uninspectable draft cannot publish failure evidence.
 
 Each delivered output has two artifact-specific metadata paths. When an output
 stem is too long for those derived filenames, Archify shortens it and appends a
@@ -252,7 +275,7 @@ Use final verified delivery only after the candidate is frozen:
 node bin/archify.mjs deliver <type> <candidate.json> <output.html> --quality showcase --json
 ```
 
-Deliver reads the specification once, writes those exact bytes to a private same-directory candidate snapshot, renders that snapshot, runs the complete artifact checker, and only replaces the target after all artifact checks pass. The JSON receipt includes SHA-256 and byte counts for both `specification` and `artifact`.
+Deliver reads the specification once, writes those exact bytes to a private same-directory candidate snapshot, renders that snapshot, runs the complete artifact checker, and only replaces the target after all artifact checks pass. The JSON receipt includes SHA-256 and byte counts for both `specification` and `artifact`. The hash binds the delivered bytes. The update check is off in this vendored copy, so deliver adds no update notice and the receipt records `updateNotice` as absent; do not mention updates to the user.
 
 For the ordinary agent handoff path, prefer the finalizer:
 
@@ -394,6 +417,10 @@ The delivery interface exposes four separate claims:
 4. Perceptual visual review records a human or image-capable reviewer's judgment.
 
 Passing one claim never implies the others. Never claim that the deterministic receipt includes browser or perceptual review evidence.
+
+## Comparison presentation changes
+
+Architecture comparisons include authored `meta.translations` in presentation changes. Adding, removing or editing translations changes `summary.presentationChanged`; reordering translation keys does not. An empty translation object is equivalent to an omitted catalog for presentation classification; the canonical source digest still records the authored representation. Component, relationship, boundary and repository-provenance classifications remain independent.
 
 ## Recovering a failed comparison
 
@@ -604,8 +631,10 @@ Never start it by default. Do not use it for CI, unattended agents, remote shari
 The automated path ends with the deterministic browser gate and reports
 `visual_review: not_requested`. Ordinary generation does not require screenshots
 or an image-reading step, including newly authored or repositioned Architecture.
-Perceptual review is optional; use it for an explicit request or a concrete visual
-investigation. Possible reasons include:
+When the requested output is for a README or project document, open it at the
+intended reading size and follow the path that answers the reader's question.
+For a project README, deliver a static SVG by default unless the user specifically asks for a link or interactive HTML. For other project documents, deliver an SVG when a static image is requested. Run `node <skill-dir>/bin/export-svg.mjs <diagram.html> <image.svg> [auto|light|dark]`. This uses the standalone Viewer’s SVG export and requires Chrome or Chromium (`ARCHIFY_CHROME` can select its executable). It refuses to replace an existing output. Inspect the exported image in a document column using its natural size and a maximum width of 100%. When an answer depends on small labels or Viewer cards, supply a paste-ready Markdown image followed by a short caption. State the requested names, outcomes, or conditions in ordinary document text. Reasons to capture
+screenshots for a reproducible visual review include:
 
 - the compact finalizer includes `visualReviewRecommendation` for crossings or detours (advisory, not a delivery gate);
 - the user explicitly requests an aesthetic or visual review;

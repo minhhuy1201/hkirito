@@ -2,7 +2,7 @@
 name: flow-map
 description: "Draw a flow as Mermaid in Markdown: business workflow, data flow, UI journey, request path, system map, state, or schema. Use for 'show me the flow', 'how do the screens connect', 'where does this data go', when a spec needs a `## Flows` section, or when an answer needs a diagram traced from code with `file:line` evidence."
 ---
-<!-- ported from tt-a1i/archify@a4065941 (Apache-2.0), modified: Mermaid output, no CLI, see THIRD_PARTY.md -->
+<!-- ported from tt-a1i/archify@a4065941 (Apache-2.0), modified: Mermaid output, no CLI, see THIRD_PARTY.md; evidence rules for dispatchers, round trips, state transitions, and fallbacks, and the reader's-answer check, added from archify@d6b0f71f2 (v3.3.2) references/repository-authoring.md -->
 
 # Flow map
 
@@ -34,7 +34,11 @@ Repository mode only. The source is the authority; a README, a package descripti
 1. **Freeze identity.** Record `git rev-parse --short HEAD` and `git status --short`. Cite committed lines only; if a path you cite is dirty, say so under the diagram.
 2. **Map the slice.** Start at the entry point for the question (route, command, handler, job, exported function) using manifests, registrations, and config. Follow imports and call sites until the flow reaches its real input, output, or side effect. Read a small connected slice; do not scan the repo for a convenient label.
 3. **Trace ownership.** Draw each edge from the code that actually performs it. An edge to a file, database, queue, or API starts at the code that reads or writes it, not at the caller that asked for it. A pure in-memory transform receives and returns values; it does not own the I/O around it. A configured provider, an injected adapter, a stub, and a real service are different claims: label the one the source shows.
-4. **Follow what runs.** Trace real branches, retries, fallbacks, and error paths. Code that is exported or configured but never called on the normal path is optional: leave it off the runtime path, or show it dashed and labelled `optional`. For a state change or a permission, trace to the actual write or check and the condition that guards it; an upstream caller alone does not prove the condition.
+4. **Follow what runs.** Trace real branches, retries, fallbacks, and error paths. Code that is exported or configured but never called on the normal path is optional: leave it off the runtime path, or show it dashed and labelled `optional`. For a state change or a permission, trace to the actual write or check and the condition that guards it; an upstream caller alone does not prove the condition. Four cases need more than that:
+   - **Dispatcher.** Follow every supported branch, not only the default. When branches run in different places or reach the outside through different components, draw where each one runs. Label an optional branch with the condition that enables it.
+   - **Round trip.** Trace the request and the response as two separate edges, including a return that passes back through a relay.
+   - **State transition.** Take the next state from the code that sets it. A user-facing error often comes with a normal transition, so do not draw the message as its own state.
+   - **Shortcut or fallback.** Read the whole condition at the call site and keep every clause whose absence would change which path runs.
 5. **Record evidence while reading.** Read with line numbers (`nl -ba <file> | sed -n '40,90p'`) and copy start and end lines from what you see. Keep each fact with its location as you go.
 6. **Name uncertainty.** Resolve an open question by reading the next relevant range, or keep it as an unknown on the diagram (see Compose). Never turn a name into an unobserved behaviour.
 
@@ -69,6 +73,16 @@ For a spec, or any behaviour that is not built yet.
   ````
 
 - For a spec, add a `## Flows` section to the spec after `## Solution`, with the views the feature needs among business workflow, data flow, and UI journey. Skip a view that would only restate the Solution.
+
+## Check the reader's answer
+
+Both modes. Before output, answer the original question from the finished diagram alone, as a reader who sees nothing else would:
+
+- For each arrow: who initiates it, who receives it, what crosses it. When the receiver only forwards the call, draw that handoff or label the arrow as logical.
+- For each branch: what selects it.
+- For an output: follow its inputs in the direction they travel. Label an arrow that is a request so it reads differently from the data returned.
+
+Repository mode: compare that answer with the source. Planned mode: compare it with the spec's intended behaviour. On a mismatch, fix the diagram; a note or evidence row cannot repair an arrow that points at the wrong node.
 
 ## Output
 
