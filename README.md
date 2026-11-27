@@ -243,6 +243,17 @@ Pick one:
 </details>
 
 <details>
+<summary><b>Subagent rules hook (optional): rules for Explore and Plan</b></summary>
+
+The built-in Explore, Plan, and web-fetch agents skip `CLAUDE.md`. Explore and Plan have Bash, so this hook injects `hooks/subagent-rules.md` into them at start. Other agent types already load `CLAUDE.md` and get nothing.
+
+| Hook | Where it works | Setup |
+|---|---|---|
+| `SubagentStart`, matcher `Explore\|Plan` | Machines where Claude hooks are allowed | Merge `hooks/settings-snippet-subagent-rules.json` into `hooks.SubagentStart` in `~/.claude/settings.json`, and replace `/ABSOLUTE/PATH/TO/hkirito`. Needs `python3`. Test: `bash hooks/tests/subagent-rules.test.sh`. |
+
+</details>
+
+<details>
 <summary><b>PR template and required self-review (per project)</b></summary>
 
 ```bash
@@ -305,7 +316,7 @@ See its [README](mods/pixel-blast/README.md) for install steps and limits.
 ```text
 skills/            kirito-mode, tidy, and the vendored and ported skills
 agents/            reviewer.md, implementer.md
-hooks/             optional commit and push gates, plus settings snippets
+hooks/             optional commit and push gates, subagent rules hook, plus settings snippets
 mods/              Claude Code mods (pixel-blast)
 templates/         PR template and Self-review workflow to copy into a project
 githooks/          optional pre-commit hook
